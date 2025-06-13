@@ -31,10 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($role !== $usuario['role']) {
         $changes['role'] = ['de' => $usuario['role'], 'para' => $role];
     }
-    $senhaAlterada = false;
     if (!empty($_POST['password'])) {
         $password_hash = password_hash($_POST['password'], PASSWORD_BCRYPT);
-        $senhaAlterada = true;
         $changes['senha'] = 'Senha alterada';
     }
 
