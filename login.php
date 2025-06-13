@@ -8,8 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    // Consulta o usuário no banco de dados
-    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE username = ?");
+    // Consulta o usuário ativo no banco de dados
+    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE username = ? AND is_deleted = FALSE");
     $stmt->execute([$username]);
     $user = $stmt->fetch();
 
