@@ -9,10 +9,16 @@ include '../db.php';
 include '../utils/image_utils.php'; // Inclui a função de processamento de imagem
 
 $id = $_GET['id'];
-$sql = "SELECT * FROM itens WHERE id = ?";
+$sql = "SELECT * FROM itens WHERE id = ? AND is_deleted = FALSE";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$id]);
 $item = $stmt->fetch();
+
+// Redireciona se o item não existir ou estiver excluído
+if (!$item) {
+    header("Location: list_items.php");
+    exit();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
@@ -45,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Obter categorias para o campo de seleção
-$category_stmt = $pdo->prepare("SELECT * FROM categorias");
+$category_stmt = $pdo->prepare("SELECT * FROM categorias WHERE is_deleted = FALSE");
 $category_stmt->execute();
 $categories = $category_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>

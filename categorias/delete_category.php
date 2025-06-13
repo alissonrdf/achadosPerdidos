@@ -10,7 +10,7 @@ include '../db.php';
 $id = $_GET['id'];
 $deleted_by = $_SESSION['user_id'];
 
-$sql = "UPDATE categorias SET deleted_at = NOW(), deleted_by = ? WHERE id = ?";
+$sql = "UPDATE categorias SET deleted_at = NOW(), deleted_by = ?, is_deleted = TRUE WHERE id = ?";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$deleted_by, $id]);
 

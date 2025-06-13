@@ -9,10 +9,15 @@ include '../db.php';
 include '../utils/image_utils.php'; // Inclui a função de processamento de imagem
 
 $id = $_GET['id'];
-$sql = "SELECT * FROM categorias WHERE id = ?";
+$sql = "SELECT * FROM categorias WHERE id = ? AND is_deleted = FALSE";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$id]);
 $categoria = $stmt->fetch();
+
+if (!$categoria) {
+    header("Location: list_categories.php");
+    exit();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
