@@ -30,11 +30,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "INSERT INTO categorias (nome, imagem_categoria, created_by) VALUES (?, ?, ?)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$name, $image, $created_by]);
+    $categoryId = $pdo->lastInsertId(); // Recupera o ID da categoria recém-criada
 
     // Log de criação de categoria
     logAction($pdo, [
         'user_id'     => $created_by,
-        'entity_id'   => null,
+        'entity_id'   => $categoryId,
         'entity_type' => 'categoria',
         'action'      => 'create_category',
         'reason'      => 'Categoria criada: ' . $name,
