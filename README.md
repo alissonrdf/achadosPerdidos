@@ -113,5 +113,3 @@ O arquivo `sql/database_setup.sql` contém todas as instruções para criar as t
 Este sistema é um projeto acadêmico ou institucional e pode ser modificado conforme necessário para atender aos requisitos específicos da organização.
 
 ---
-
-Este `README.md` abrange todas as informações relevantes para a instalação, configuração e uso do sistema de Achados e Perdidos, com as menções à auditoria de logs movidas para a seção de melhorias.
