@@ -14,7 +14,7 @@ $date_start = $_GET['date_start'] ?? '';
 $date_end = $_GET['date_end'] ?? '';
 
 // Consulta para obter categorias para o filtro
-$category_stmt = $pdo->prepare("SELECT * FROM categorias");
+$category_stmt = $pdo->prepare("SELECT * FROM categorias WHERE is_deleted = FALSE");
 $category_stmt->execute();
 $categories = $category_stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -113,7 +113,7 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td><?php echo htmlspecialchars($item['nome']); ?></td>
                 <td><?php echo htmlspecialchars($item['descricao']); ?></td>
                 <td><?php echo htmlspecialchars($item['categoria_nome']); ?></td>
-                <td><img src="uploads/<?php echo htmlspecialchars($item['foto']) ? htmlspecialchars($item['foto']) : 'default.png'; ?>" alt="Imagem do Item" width="50" onclick="openModal(this.src)" style="cursor: pointer;"/></td>
+                <td><img src="uploads/<?php echo htmlspecialchars($item['foto']) ? htmlspecialchars($item['foto']) : 'default.webp'; ?>" alt="Imagem do Item" width="50" onclick="openModal(this.src)" style="cursor: pointer;"/></td>
                 <td><?php echo date("d/m/Y", strtotime($item['created_at'])); ?></td>
             </tr>
             <?php endforeach; ?>

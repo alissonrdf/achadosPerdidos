@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Obter categorias para o campo de seleção
-$category_stmt = $pdo->prepare("SELECT * FROM categorias");
+$category_stmt = $pdo->prepare("SELECT * FROM categorias WHERE is_deleted = FALSE");
 $category_stmt->execute();
 $categories = $category_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
