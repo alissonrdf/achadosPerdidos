@@ -80,6 +80,7 @@ O arquivo `sql/database_setup.sql` contém todas as instruções para criar as t
 - **Tabela `usuarios`**: Armazena informações de login e permissões dos usuários.
 - **Tabela `categorias`**: Armazena categorias dos itens, com ícones padrão.
 - **Tabela `itens`**: Armazena os itens encontrados, com referências para as categorias e o usuário que cadastrou o item.
+- **Tabela `logs`**: Registra ações executadas no sistema para fins de auditoria.
 
 ## Guia de Uso
 
@@ -99,7 +100,6 @@ O arquivo `sql/database_setup.sql` contém todas as instruções para criar as t
 
 ## Possíveis Melhorias
 
-- **Logs de Atividade**: Implementar uma tabela de logs para registrar atividades dos usuários, como adições e edições de itens, para auditoria e monitoramento.
 - **Notificações por E-mail**: Enviar notificações para usuários sobre itens adicionados ou atualizações de status.
 - **Suporte a Vários Idiomas**: Permitir que o sistema seja usado em diferentes idiomas.
 - **Aplicativo Mobile**: Criar uma versão mobile para facilitar o uso em smartphones.

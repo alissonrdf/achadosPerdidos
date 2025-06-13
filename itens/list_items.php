@@ -104,7 +104,7 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <td>
                         <a href="edit_item.php?id=<?php echo $item['id']; ?>">Editar</a> |
-                        <a href="delete_item.php?id=<?php echo $item['id']; ?>" onclick="return confirm('Tem certeza que deseja excluir este item?');">Excluir</a>
+                        <a href="delete_item.php?id=<?php echo $item['id']; ?>">Excluir</a>
                     </td>
                 <?php endif; ?>
             </tr>
