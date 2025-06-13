@@ -2,6 +2,19 @@
 /**
  * Centraliza o registro de logs para facilitar manutenção e evitar erros.
  * Use logAction em vez de registerLog diretamente nos CRUDs.
+ *
+ * @param PDO $pdo Conexão PDO
+ * @param array $data Dados do log. Esperado:
+ *   - user_id (int): ID do usuário responsável
+ *   - entity_id (int|null): ID da entidade afetada
+ *   - entity_type (string|null): Tipo da entidade ('item', 'categoria', 'usuario', etc.)
+ *   - action (string): Ação realizada
+ *   - reason (string): Motivo ou descrição da ação
+ *   - changes (string|null): Mudanças relevantes (JSON/texto)
+ *   - status (string): 'success' ou 'error'
+ *   - ip_address (string|null): IP do usuário
+ *   - user_agent (string|null): User agent do usuário
+ * @return int ID do log inserido
  */
 function logAction(PDO $pdo, array $data): int {
     $userId     = $data['user_id']     ?? null;
@@ -30,6 +43,18 @@ function logAction(PDO $pdo, array $data): int {
 /**
  * Registra uma ação no log e retorna o ID do log inserido.
  * Não use diretamente nos CRUDs, use logAction.
+ *
+ * @param PDO $pdo Conexão PDO
+ * @param int $userId ID do usuário
+ * @param int|null $entityId ID da entidade relacionada
+ * @param string|null $entityType Tipo da entidade
+ * @param string $action Ação realizada
+ * @param string $reason Motivo da ação
+ * @param string|null $changes Mudanças relevantes (JSON/texto)
+ * @param string $status 'success' ou 'error'
+ * @param string|null $ipAddress IP do usuário
+ * @param string|null $userAgent User agent do usuário
+ * @return int ID do log inserido
  */
 function registerLog(
     PDO $pdo,

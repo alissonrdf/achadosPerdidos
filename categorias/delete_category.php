@@ -23,7 +23,7 @@ $stmt->execute([$deleted_by, $id]);
 // Log de exclusão de categoria
 logAction($pdo, [
     'user_id'     => $deleted_by,
-    'entity_id'   => null,
+    'entity_id'   => $id, // Corrigido conforme review: deve registrar o ID da categoria excluída
     'entity_type' => 'categoria',
     'action'      => 'delete_category',
     'reason'      => 'Categoria excluída',

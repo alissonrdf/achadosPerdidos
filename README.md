@@ -95,8 +95,8 @@ O arquivo `sql/database_setup.sql` contém todas as instruções para criar as t
 ### Exemplo de registro de log de edição
 ```json
 {
-  "nome": { "old": "Carteiras", "new": "Carteiras e Bolsas" },
-  "imagem_categoria": { "old": "carteira.webp", "new": "carteira_bolsa.webp" }
+  "nome": { "de": "Carteiras", "para": "Carteiras e Bolsas" },
+  "imagem_categoria": { "de": "carteira.webp", "para": "carteira_bolsa.webp" }
 }
 ```
 
