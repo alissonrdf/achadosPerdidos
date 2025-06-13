@@ -62,6 +62,13 @@ function processImage($file, $targetPath, $maxWidth = 800, $maxHeight = 800, $qu
 
     // Criar imagem redimensionada
     $newImage = imagecreatetruecolor($newWidth, $newHeight);
+    // Preservar transparência para PNG ou GIF
+    if (in_array($mime, ['image/png', 'image/gif'])) {
+        imagealphablending($newImage, false);
+        imagesavealpha($newImage, true);
+        $transparent = imagecolorallocatealpha($newImage, 0, 0, 0, 127);
+        imagefill($newImage, 0, 0, $transparent);
+    }
     imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
     // Definir o caminho para salvar a imagem em WebP

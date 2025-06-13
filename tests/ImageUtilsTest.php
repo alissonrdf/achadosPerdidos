@@ -33,6 +33,39 @@ class ImageUtilsTest extends TestCase
         unlink($webpPath);
     }
 
+    public function testProcessImagePreservesPngTransparency()
+    {
+        // Create temporary PNG image with transparency
+        $tmpPng = tempnam(sys_get_temp_dir(), 'img_') . '.png';
+        $image = imagecreatetruecolor(100, 100);
+        imagesavealpha($image, true);
+        $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127);
+        imagefill($image, 0, 0, $transparent);
+        imagepng($image, $tmpPng);
+        imagedestroy($image);
+
+        $file = [
+            'tmp_name' => $tmpPng,
+            'name' => 'test.png',
+            'type' => 'image/png'
+        ];
+
+        $target = tempnam(sys_get_temp_dir(), 'target_') . '.png';
+        $webpPath = processImage($file, $target, 100, 100, 80);
+
+        $this->assertFileExists($webpPath);
+
+        $webpImage = imagecreatefromwebp($webpPath);
+        $color = imagecolorat($webpImage, 0, 0);
+        $alpha = ($color & 0x7F000000) >> 24;
+        imagedestroy($webpImage);
+
+        unlink($tmpPng);
+        unlink($webpPath);
+
+        $this->assertSame(127, $alpha);
+    }
+
     public function testGenerateSafeImageName()
     {
         $name = generateSafeImageName('My Document #1');

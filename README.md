@@ -43,7 +43,8 @@ Abaixo está a estrutura de diretórios e arquivos do sistema, com descrições 
 │   └── list_users.php               # Listagem de usuários
 │
 ├── utils/                           # Funções auxiliares do sistema
-│   └── image_utils.php              # Utilitários para processar e salvar imagens no formato WebP
+│   ├── image_utils.php              # Utilitários para processar e salvar imagens no formato WebP
+│   └── image_modal.php              # Componente de modal reutilizável para exibição de imagens
 │
 ├── config.php                       # Configurações globais (criado após a instalação do sistema)
 ├── dashboard.php                    # Painel principal do sistema (acesso condicional com base no papel do usuário)
