@@ -19,3 +19,10 @@ Thumbs.db
 *.temp
 # Teste de cobertura
 coverage/
+# Uploads de imagens de teste e uploads em geral (exceto imagens padrão)
+/uploads/*
+!/uploads/acessorios.webp
+!/uploads/default.webp
+!/uploads/documentos.webp
+!/uploads/eletronicos.webp
+!/uploads/outros.webp
