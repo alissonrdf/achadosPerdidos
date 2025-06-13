@@ -13,7 +13,8 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = (int)($_POST['id'] ?? 0);
     $reason = trim($_POST['reason'] ?? '');
-    if ($id && $reason !== '') {
+    $confirmed = $_POST['confirmed'] ?? '';
+    if ($id && $reason !== '' && $confirmed === '1') {
         $deleted_by = $_SESSION['user_id'];
         $pdo->beginTransaction();
         $stmt = $pdo->prepare("UPDATE itens SET deleted_at = NOW(), deleted_by = ?, is_deleted = TRUE WHERE id = ?");
@@ -23,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: list_items.php");
         exit();
     } else {
-        $error = 'O motivo da exclusão é obrigatório.';
+        $error = 'Confirmação e motivo da exclusão são obrigatórios.';
     }
 } else {
     $id = (int)($_GET['id'] ?? 0);
@@ -40,8 +41,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <div class="container">
     <h1>Confirmar Exclusão</h1>
-    <form method="POST" action="delete_item.php">
+    <form method="POST" action="delete_item.php" id="deleteForm">
         <input type="hidden" name="id" value="<?php echo htmlspecialchars($id); ?>">
+        <input type="hidden" name="confirmed" id="confirmed" value="0">
         <label for="reason">Motivo da exclusão:</label>
         <textarea name="reason" id="reason" required></textarea>
         <?php if ($error): ?>
@@ -53,5 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </form>
 </div>
+<script>
+document.getElementById('deleteForm').addEventListener('submit', function(e) {
+    if (!confirm('Tem certeza que deseja excluir este item?')) {
+        e.preventDefault();
+    } else {
+        document.getElementById('confirmed').value = '1';
+    }
+});
+</script>
 </body>
 </html>
