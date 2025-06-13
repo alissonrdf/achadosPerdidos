@@ -80,7 +80,7 @@ O arquivo `sql/database_setup.sql` contém todas as instruções para criar as t
 - **Tabela `usuarios`**: Armazena informações de login e permissões dos usuários.
 - **Tabela `categorias`**: Armazena categorias dos itens, com ícones padrão.
 - **Tabela `itens`**: Armazena os itens encontrados, com referências para as categorias e o usuário que cadastrou o item.
-- **Tabela `logs`**: Registra ações executadas no sistema para fins de auditoria.
+- **Tabela `logs`**: Registra ações executadas no sistema para fins de auditoria, com `item_id` referenciando `itens(id)`.
 
 ## Guia de Uso
 
