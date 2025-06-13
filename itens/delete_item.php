@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'entity_id'   => $id,
                 'entity_type' => 'item',
                 'action'      => 'delete_item_error',
-                'reason'      => 'An error occurred while deleting the item: ' . $e->getMessage(),
+                'reason'      => 'An error occurred while deleting the item.',
                 'changes'     => null,
                 'status'      => 'error',
                 'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
