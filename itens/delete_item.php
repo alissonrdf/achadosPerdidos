@@ -38,17 +38,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }
+            // Log detalhado do erro
             logAction($pdo, [
                 'user_id'     => $deleted_by,
                 'entity_id'   => $id,
                 'entity_type' => 'item',
                 'action'      => 'delete_item_error',
-                'reason'      => 'An error occurred while deleting the item.',
+                'reason'      => 'An error occurred while deleting the item: ' . $e->getMessage(),
                 'changes'     => null,
                 'status'      => 'error',
                 'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
                 'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
             ]);
+            // Exibe mensagem genérica para o usuário
             $error = 'Ocorreu um erro ao tentar excluir o item. Por favor, tente novamente mais tarde.';
         }
     } else {
