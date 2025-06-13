@@ -25,8 +25,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "Tipo de arquivo não permitido. Envie apenas imagens (jpg, png, gif, webp, bmp).";
             exit();
         }
-        // Validação do tamanho do arquivo (máx. 2MB)
-        $maxFileSize = 10 * 1024 * 1024; // 2MB
+        // Validação do tamanho do arquivo (máx. 10MB)
+        $maxFileSize = 10 * 1024 * 1024; // 10MB
         if ($_FILES['image']['size'] > $maxFileSize) {
             echo "O arquivo excede o tamanho máximo permitido de 10MB.";
             exit();

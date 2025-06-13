@@ -1,2 +1,21 @@
 config.php
 .phpunit.result.cache
+# Composer
+/vendor/
+composer.phar
+composer.lock
+composer.json
+# PHPUnit
+.phpunit.cache/
+# Outras pastas e arquivos temporários
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db
+# Logs
+*.log
+# Arquivos temporários
+*.tmp
+*.temp
+# Teste de cobertura
+coverage/

@@ -28,6 +28,8 @@ class ImageUtilsTest extends TestCase
         $this->assertSame('image/webp', $info['mime']);
         $this->assertLessThanOrEqual(800, $info[0]);
         $this->assertLessThanOrEqual(800, $info[1]);
+        // Melhoria: Verifica se o arquivo não está vazio
+        $this->assertGreaterThan(0, filesize($webpPath), 'Arquivo WebP está vazio');
 
         unlink($tmpJpeg);
         unlink($webpPath);
