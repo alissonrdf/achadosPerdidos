@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['install'])) {
     // Configura o DSN para MySQL
     $dsn = "mysql:host=$dbHost";
 
-    /// Tenta se conectar ao banco de dados e executar o script SQL
+    // Tenta se conectar ao banco de dados e executar o script SQL
     try {
         // Conexão com o banco de dados
         $pdo = new PDO($dsn, $dbUser, $dbPass);
