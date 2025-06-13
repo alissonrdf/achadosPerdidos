@@ -11,10 +11,13 @@
  *   - action (string): Ação realizada
  *   - reason (string): Motivo ou descrição da ação
  *   - changes (string|null): Mudanças relevantes (JSON/texto)
- *   - status (string): 'success' ou 'error'
+ *   - status (string): 'success' ou 'error'. Se valor inválido, será considerado 'success'.
  *   - ip_address (string|null): IP do usuário
  *   - user_agent (string|null): User agent do usuário
  * @return int ID do log inserido
+ *
+ * Observação: Caso um status inválido seja fornecido, será registrado como 'success'.
+ * Isso evita registros inconsistentes e mantém o padrão de sucesso como default.
  */
 function logAction(PDO $pdo, array $data): int {
     $userId     = $data['user_id']     ?? null;

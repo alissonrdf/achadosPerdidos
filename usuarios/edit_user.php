@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     if (!empty($_POST['password'])) {
         $password_hash = password_hash($_POST['password'], PASSWORD_BCRYPT);
-        $changes['password'] = 'Senha alterada';
+        $changes['password'] = ['de' => '***', 'para' => '***'];
     }
 
     $sql = "UPDATE usuarios SET username = ?, email = ?, password_hash = ?, role = ?, updated_at = ? WHERE id = ?";
