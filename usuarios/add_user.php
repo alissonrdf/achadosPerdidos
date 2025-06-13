@@ -6,6 +6,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
 }
 
 include '../db.php';
+require_once '../utils/log_utils.php'; // Para registrar logs
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
@@ -20,6 +21,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "INSERT INTO usuarios (username, email, password_hash, role) VALUES (?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$username, $email, $password_hash, $role]);
+
+    // Log de criação de usuário
+    registerLog($pdo, $_SESSION['user_id'], 0, 'create_user', 'Usuário criado: ' . $username);
 
     header("Location: list_users.php");
     exit();

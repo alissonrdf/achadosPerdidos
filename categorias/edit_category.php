@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 
 include '../db.php';
 include '../utils/image_utils.php'; // Inclui a função de processamento de imagem
+require_once '../utils/log_utils.php'; // Para registrar logs
 
 $id = $_GET['id'];
 $sql = "SELECT * FROM categorias WHERE id = ? AND is_deleted = FALSE";
@@ -42,6 +43,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "UPDATE categorias SET nome = ?, imagem_categoria = ?, updated_at = NOW(), updated_by = ? WHERE id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$name, $image, $updated_by, $id]);
+
+    // Log de edição de categoria
+    registerLog($pdo, $updated_by, $id, 'edit_category', 'Categoria editada: ' . $name);
 
     header("Location: list_categories.php");
     exit();

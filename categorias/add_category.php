@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 
 include '../db.php';
 include '../utils/image_utils.php'; // Inclui a função de processamento de imagem
+require_once '../utils/log_utils.php'; // Para registrar logs
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
@@ -29,6 +30,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "INSERT INTO categorias (nome, imagem_categoria, created_by) VALUES (?, ?, ?)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$name, $image, $created_by]);
+
+    // Log de criação de categoria
+    registerLog($pdo, $created_by, 0, 'create_category', 'Categoria criada: ' . $name);
 
     header("Location: list_categories.php");
     exit();

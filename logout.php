@@ -1,5 +1,11 @@
 <?php
 session_start();
+require_once 'utils/log_utils.php';
+
+// Log de logout, se houver usuário logado
+if (isset($_SESSION['user_id'])) {
+    registerLog($pdo, $_SESSION['user_id'], 0, 'logout', 'Logout do usuário');
+}
 
 // Verifica se há uma sessão ativa antes de destruí-la
 if (session_status() === PHP_SESSION_ACTIVE) {

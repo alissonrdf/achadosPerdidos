@@ -6,6 +6,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
 }
 
 include '../db.php';
+require_once '../utils/log_utils.php'; // Para registrar logs
 
 $id = $_GET['id'];
 $sql = "SELECT * FROM usuarios WHERE id = ?";
@@ -28,6 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "UPDATE usuarios SET username = ?, email = ?, password_hash = ?, role = ?, updated_at = ? WHERE id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$username, $email, $password_hash, $role, $updated_at, $id]);
+
+    // Log de edição de usuário
+    registerLog($pdo, $_SESSION['user_id'], $id, 'edit_user', 'Usuário editado: ' . $username);
 
     header("Location: list_users.php");
     exit();

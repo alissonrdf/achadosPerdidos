@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 
 include '../db.php';
 include '../utils/image_utils.php'; // Inclui a função de processamento de imagem
+require_once '../utils/log_utils.php'; // Para registrar logs
 
 $id = $_GET['id'];
 $sql = "SELECT * FROM itens WHERE id = ? AND is_deleted = FALSE";
@@ -45,6 +46,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "UPDATE itens SET nome = ?, descricao = ?, categoria_id = ?, foto = ?, updated_at = NOW(), updated_by = ? WHERE id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$name, $description, $category_id, $image, $updated_by, $id]);
+
+    // Log de edição de item
+    registerLog($pdo, $updated_by, $id, 'edit_item', 'Item editado: ' . $name);
 
     header("Location: list_items.php");
     exit();

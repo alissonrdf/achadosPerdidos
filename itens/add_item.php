@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 
 include '../db.php';
 include '../utils/image_utils.php'; // Inclui a função de processamento de imagem
+require_once '../utils/log_utils.php'; // Para registrar logs
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
@@ -59,6 +60,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "INSERT INTO itens (nome, descricao, categoria_id, foto, created_by) VALUES (?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$name, $description, $category_id, $image, $created_by]);
+
+    // Log de criação de item
+    $item_id = $pdo->lastInsertId();
+    registerLog($pdo, $created_by, $item_id, 'create_item', 'Item criado: ' . $name);
 
     header("Location: list_items.php");
     exit();
