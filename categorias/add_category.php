@@ -32,7 +32,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->execute([$name, $image, $created_by]);
 
     // Log de criação de categoria
-    registerLog($pdo, $created_by, 0, 'create_category', 'Categoria criada: ' . $name);
+    logAction($pdo, [
+        'user_id'     => $created_by,
+        'entity_id'   => null,
+        'entity_type' => 'categoria',
+        'action'      => 'create_category',
+        'reason'      => 'Categoria criada: ' . $name,
+        'changes'     => null,
+        'status'      => 'success',
+        'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+        'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+    ]);
 
     header("Location: list_categories.php");
     exit();

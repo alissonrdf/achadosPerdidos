@@ -18,7 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_role'] = $user['role']; // Salva o papel do usuário na sessão
         // Log de login
-        registerLog($pdo, $user['id'], 0, 'login', 'Login realizado');
+        logAction($pdo, [
+            'user_id'     => $user['id'],
+            'entity_id'   => null,
+            'entity_type' => null,
+            'action'      => 'login',
+            'reason'      => 'Login realizado',
+            'changes'     => null,
+            'status'      => 'success',
+            'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+            'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+        ]);
         header("Location: dashboard.php");
         exit();
     } else {

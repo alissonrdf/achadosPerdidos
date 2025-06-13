@@ -21,7 +21,17 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([$deleted_by, $id]);
 
 // Log de exclusão de categoria
-registerLog($pdo, $deleted_by, $id, 'delete_category', 'Categoria excluída');
+logAction($pdo, [
+    'user_id'     => $deleted_by,
+    'entity_id'   => null,
+    'entity_type' => 'categoria',
+    'action'      => 'delete_category',
+    'reason'      => 'Categoria excluída',
+    'changes'     => null,
+    'status'      => 'success',
+    'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+    'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+]);
 
 header("Location: list_categories.php");
 exit();

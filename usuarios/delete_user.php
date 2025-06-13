@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
 }
 
 include '../db.php';
-require_once '../utils/log_utils.php'; // Para registrar logs
+require_once '../utils/log_utils.php'; // Corrigido para garantir o uso de logAction
 
 $id = $_GET['id'];
 $deleted_by = $_SESSION['user_id'];
@@ -17,7 +17,17 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute([$deleted_by, $id]);
 
 // Log de exclusão de usuário
-registerLog($pdo, $deleted_by, $id, 'delete_user', 'Usuário excluído');
+logAction($pdo, [
+    'user_id'     => $deleted_by,
+    'entity_id'   => $id,
+    'entity_type' => 'usuario',
+    'action'      => 'delete_user',
+    'reason'      => 'Usuário excluído',
+    'changes'     => null,
+    'status'      => 'success',
+    'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+    'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+]);
 
 header("Location: list_users.php");
 exit();

@@ -23,7 +23,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->execute([$username, $email, $password_hash, $role]);
 
     // Log de criação de usuário
-    registerLog($pdo, $_SESSION['user_id'], 0, 'create_user', 'Usuário criado: ' . $username);
+    logAction($pdo, [
+        'user_id'     => $_SESSION['user_id'],
+        'entity_id'   => null,
+        'entity_type' => 'usuario',
+        'action'      => 'create_user',
+        'reason'      => 'Usuário criado: ' . $username,
+        'changes'     => null,
+        'status'      => 'success',
+        'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+        'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+    ]);
 
     header("Location: list_users.php");
     exit();

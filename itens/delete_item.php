@@ -20,7 +20,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->beginTransaction();
             $stmt = $pdo->prepare("UPDATE itens SET deleted_at = NOW(), deleted_by = ?, is_deleted = TRUE WHERE id = ?");
             $stmt->execute([$deleted_by, $id]);
-            registerLog($pdo, $deleted_by, $id, 'delete_item', $reason);
+            logAction($pdo, [
+                'user_id'     => $deleted_by,
+                'entity_id'   => $id,
+                'entity_type' => 'item',
+                'action'      => 'delete_item',
+                'reason'      => $reason,
+                'changes'     => null,
+                'status'      => 'success',
+                'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+                'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+            ]);
             $pdo->commit();
             header("Location: list_items.php");
             exit();
@@ -28,7 +38,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }
-            registerLog($pdo, $deleted_by, $id, 'delete_item_error', $e->getMessage());
+            logAction($pdo, [
+                'user_id'     => $deleted_by,
+                'entity_id'   => $id,
+                'entity_type' => 'item',
+                'action'      => 'delete_item_error',
+                'reason'      => $e->getMessage(),
+                'changes'     => null,
+                'status'      => 'error',
+                'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+                'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+            ]);
             $error = 'Ocorreu um erro ao tentar excluir o item. Por favor, tente novamente mais tarde.';
         }
     } else {

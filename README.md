@@ -9,6 +9,7 @@ Este é um sistema web para gerenciar itens encontrados e perdidos, permitindo o
 - **CRUD de Usuários**: Cadastro e gerenciamento de usuários, com diferentes níveis de permissão (administrador e usuário comum).
 - **Autenticação e Controle de Acesso**: Usuários comuns podem gerenciar itens e categorias, enquanto administradores têm acesso completo ao sistema, incluindo o gerenciamento de usuários.
 - **Upload e Processamento de Imagens**: Imagens enviadas são processadas e salvas no formato WebP para otimização.
+- **Auditoria Detalhada de Logs**: Todas as ações administrativas são registradas em logs detalhados, incluindo o tipo de entidade afetada, alterações realizadas e informações de contexto.
 
 ## Estrutura de Diretórios
 
@@ -80,7 +81,50 @@ O arquivo `sql/database_setup.sql` contém todas as instruções para criar as t
 - **Tabela `usuarios`**: Armazena informações de login e permissões dos usuários.
 - **Tabela `categorias`**: Armazena categorias dos itens, com ícones padrão.
 - **Tabela `itens`**: Armazena os itens encontrados, com referências para as categorias e o usuário que cadastrou o item.
-- **Tabela `logs`**: Registra ações executadas no sistema para fins de auditoria, com `item_id` referenciando `itens(id)`.
+- **Tabela `logs`**: Registra ações executadas no sistema para fins de auditoria, com os seguintes campos principais:
+  - `user_id`: Usuário responsável pela ação.
+  - `entity_id`: ID da entidade afetada (item, categoria ou usuário).
+  - `entity_type`: Tipo da entidade afetada (`item`, `categoria`, `usuario`).
+  - `action`: Ação realizada (`create`, `edit`, `delete`, `login`, etc).
+  - `reason`: Motivo ou descrição da ação.
+  - `changes`: Detalhamento das alterações realizadas (em formato JSON), exceto para senhas, que não são registradas por segurança.
+  - `status`: Resultado da ação (`success` ou `error`).
+  - `ip_address` e `user_agent`: Informações do ambiente de quem realizou a ação.
+  - `created_at`: Data/hora do registro.
+
+### Exemplo de registro de log de edição
+```json
+{
+  "nome": { "old": "Carteiras", "new": "Carteiras e Bolsas" },
+  "imagem_categoria": { "old": "carteira.webp", "new": "carteira_bolsa.webp" }
+}
+```
+
+> **Nota:** Para ações de edição de senha, o campo `changes` não armazena o valor antigo ou novo da senha, apenas indica que a senha foi alterada.
+
+## Auditoria e Centralização de Logs
+
+Todas as ações administrativas relevantes (criação, edição, exclusão, login, logout, etc.) são registradas na tabela `logs`. Para facilitar manutenção e evitar erros, o sistema centraliza o registro de logs na função `logAction` (em `utils/log_utils.php`).
+
+**Como usar:**
+
+```php
+logAction($pdo, [
+    'user_id'     => $userId, // obrigatório
+    'entity_id'   => $entidadeId, // pode ser null
+    'entity_type' => 'item'|'categoria'|'usuario'|null, // tipo da entidade
+    'action'      => 'create_item'|'edit_user'|etc, // ação realizada
+    'reason'      => 'Descrição da ação',
+    'changes'     => json_encode([...]) ou null, // mudanças relevantes
+    'status'      => 'success'|'error',
+    'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+    'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+]);
+```
+
+- **Nunca use `registerLog` diretamente nos CRUDs.**
+- A função `logAction` faz validação, corte de campos e preenche valores padrão.
+- Se precisar alterar a estrutura dos logs, basta modificar a função central.
 
 ## Guia de Uso
 

@@ -63,7 +63,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Log de criação de item
     $item_id = $pdo->lastInsertId();
-    registerLog($pdo, $created_by, $item_id, 'create_item', 'Item criado: ' . $name);
+    logAction($pdo, [
+        'user_id'     => $created_by,
+        'entity_id'   => $item_id,
+        'entity_type' => 'item',
+        'action'      => 'create_item',
+        'reason'      => 'Item criado: ' . $name,
+        'changes'     => null,
+        'status'      => 'success',
+        'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+        'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+    ]);
 
     header("Location: list_items.php");
     exit();
