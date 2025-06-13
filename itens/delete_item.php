@@ -25,7 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: list_items.php");
             exit();
         } catch (Exception $e) {
-            $pdo->rollBack();
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             registerLog($pdo, $_SESSION['user_id'], $id, 'delete_item_error', $e->getMessage());
             $error = 'Ocorreu um erro ao tentar excluir o item. Por favor, tente novamente mais tarde.';
         }
