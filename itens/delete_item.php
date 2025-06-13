@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
             }
-            registerLog($pdo, $_SESSION['user_id'], $id, 'delete_item_error', $e->getMessage());
+            registerLog($pdo, $deleted_by, $id, 'delete_item_error', $e->getMessage());
             $error = 'Ocorreu um erro ao tentar excluir o item. Por favor, tente novamente mais tarde.';
         }
     } else {
