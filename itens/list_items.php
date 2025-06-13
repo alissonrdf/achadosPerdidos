@@ -104,7 +104,7 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <td>
                         <a href="edit_item.php?id=<?php echo $item['id']; ?>">Editar</a> |
-                        <a href="delete_item.php?id=<?php echo $item['id']; ?>" onclick="return confirm('Tem certeza que deseja excluir este item?');">Excluir</a>
+                        <a href="#" onclick="openDeleteModal(<?php echo $item['id']; ?>, <?php echo json_encode($item['nome']); ?>); return false;">Excluir</a>
                     </td>
                 <?php endif; ?>
             </tr>
@@ -117,5 +117,63 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
     <?php include '../utils/image_modal.php'; ?>
+
+    <div id="deleteModal" class="modal" role="dialog" aria-modal="true" tabindex="-1" style="display:none;">
+        <div class="modal-box">
+            <span class="close" id="closeDeleteModal" aria-label="Fechar">&times;</span>
+            <div id="deleteItemInfo" style="margin-bottom:10px; font-weight:bold; color:#d32f2f;"></div>
+            <form id="deleteForm" method="POST" action="delete_item.php">
+                <input type="hidden" name="id" id="delete_id">
+                <input type="hidden" name="confirmed" id="delete_confirmed" value="0">
+                <label for="delete_reason">Motivo da exclusão:</label>
+                <textarea name="reason" id="delete_reason" required></textarea>
+                <div class="button-container">
+                    <button type="submit" class="save-button">Excluir</button>
+                    <button type="button" class="cancel-button" onclick="closeDeleteModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const deleteModal = document.getElementById('deleteModal');
+        const deleteForm = document.getElementById('deleteForm');
+        const deleteId = document.getElementById('delete_id');
+        const deleteReason = document.getElementById('delete_reason');
+        const confirmedInput = document.getElementById('delete_confirmed');
+        const closeBtn = document.getElementById('closeDeleteModal');
+        const deleteItemInfo = document.getElementById('deleteItemInfo');
+        let lastFocus = null;
+
+        window.openDeleteModal = function(id, nome) {
+            lastFocus = document.activeElement;
+            deleteId.value = id;
+            deleteReason.value = '';
+            confirmedInput.value = '0';
+            deleteItemInfo.textContent = 'Item selecionado: ' + nome;
+            deleteModal.style.display = 'flex';
+            setTimeout(() => deleteModal.classList.add('modal-open'), 10);
+            deleteModal.focus();
+        };
+
+        window.closeDeleteModal = function() {
+            deleteModal.classList.remove('modal-open');
+            setTimeout(() => { deleteModal.style.display = 'none'; }, 200);
+            if (lastFocus) lastFocus.focus();
+        };
+
+        deleteModal.addEventListener('click', e => { if (e.target === deleteModal) closeDeleteModal(); });
+        closeBtn.addEventListener('click', closeDeleteModal);
+
+        deleteForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (confirm('Tem certeza que deseja excluir este item?')) {
+                confirmedInput.value = '1';
+                deleteForm.submit();
+            }
+        });
+    })();
+    </script>
 </body>
 </html>

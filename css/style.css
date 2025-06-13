@@ -7,11 +7,10 @@
     z-index: 1;
     left: 0;
     top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-    opacity: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Sobreposição escura */
+    opacity: 1; /* Remova a opacidade 0 */
     transition: opacity 0.2s ease;
     pointer-events: none;
 }
@@ -293,5 +292,26 @@ textarea {
 
 .login-button:hover {
     background-color: #d0d0d0;
+}
+
+/* Caixa interna do modal para formulários */
+.modal-box {
+    background-color: #fff; /* Fundo sólido */
+    padding: 24px 20px;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+    position: relative;
+    color: #333;
+    z-index: 2;
+}
+
+/* Limita o redimensionamento do textarea dentro do modal */
+.modal-box textarea {
+    resize: vertical; /* Permite apenas redimensionar para cima/baixo */
+    max-width: 100%;  /* Nunca ultrapassa a largura do modal */
+    min-width: 0;
+    box-sizing: border-box;
 }
 
