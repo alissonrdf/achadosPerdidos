@@ -96,7 +96,7 @@ O arquivo `sql/database_setup.sql` contém todas as instruções para criar as t
 ```json
 {
   "user_id": 2,
-  "entity_id": 5,
+  "entity_id": 5,  
   "entity_type": "categoria",
   "action": "edit_category",
   "reason": "Categoria editada",
@@ -106,11 +106,12 @@ O arquivo `sql/database_setup.sql` contém todas as instruções para criar as t
   },
   "status": "success",
   "ip_address": "127.0.0.1",
-  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+  "created_at": "2025-06-13 14:32:45"
 }
 ```
 
-> **Nota:** Para ações de edição de senha, o campo `changes` não armazena o valor antigo ou novo da senha, apenas indica que a senha foi alterada.
+> **Nota:** Para ações de edição de senha, o campo `changes` registra apenas a indicação da alteração, sem valores.
 
 ## Auditoria e Centralização de Logs
 
@@ -134,6 +135,8 @@ logAction($pdo, [
 
 - **Nunca use `registerLog` diretamente nos CRUDs.**
 - A função `logAction` faz validação, corte de campos e preenche valores padrão.
+- Valores inválidos para `status` serão automaticamente convertidos para `'success'`.
+- Campos longos (`ip_address` e `user_agent`) são truncados automaticamente.
 - Se precisar alterar a estrutura dos logs, basta modificar a função central.
 
 ## Guia de Uso

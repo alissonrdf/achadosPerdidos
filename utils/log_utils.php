@@ -18,6 +18,8 @@
  *
  * Observação: Caso um status inválido seja fornecido, será registrado como 'success'.
  * Isso evita registros inconsistentes e mantém o padrão de sucesso como default.
+ * Campos longos (ip_address, user_agent) são automaticamente truncados para
+ * respeitar os limites da tabela (45 e 255 caracteres, respectivamente).
  */
 function logAction(PDO $pdo, array $data): int {
     $userId     = $data['user_id']     ?? null;
@@ -50,11 +52,11 @@ function logAction(PDO $pdo, array $data): int {
  * @param PDO $pdo Conexão PDO
  * @param int $userId ID do usuário
  * @param int|null $entityId ID da entidade relacionada
- * @param string|null $entityType Tipo da entidade
+ * @param string|null $entityType Tipo da entidade relacionada
  * @param string $action Ação realizada
  * @param string $reason Motivo da ação
- * @param string|null $changes Mudanças relevantes (JSON/texto)
- * @param string $status 'success' ou 'error'
+ * @param string|null $changes Resumo das alterações (JSON ou texto)
+ * @param string $status Status da ação (success|error)
  * @param string|null $ipAddress IP do usuário
  * @param string|null $userAgent User agent do usuário
  * @return int ID do log inserido
