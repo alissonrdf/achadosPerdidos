@@ -55,5 +55,6 @@ CREATE TABLE logs (
     action VARCHAR(50),
     reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE SET NULL,
+    FOREIGN KEY (item_id) REFERENCES itens(id) ON DELETE SET NULL
 );
