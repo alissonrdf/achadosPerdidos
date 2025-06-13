@@ -104,7 +104,7 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <td>
                         <a href="edit_item.php?id=<?php echo $item['id']; ?>">Editar</a> |
-                        <a href="#" onclick="openDeleteModal(<?php echo $item['id']; ?>, '<?php echo htmlspecialchars(addslashes($item['nome'])); ?>'); return false;">Excluir</a>
+                        <a href="#" onclick="openDeleteModal(<?php echo $item['id']; ?>, <?php echo json_encode($item['nome']); ?>); return false;">Excluir</a>
                     </td>
                 <?php endif; ?>
             </tr>
