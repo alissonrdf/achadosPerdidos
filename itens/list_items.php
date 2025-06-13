@@ -104,7 +104,7 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <td>
                         <a href="edit_item.php?id=<?php echo $item['id']; ?>">Editar</a> |
-                        <a href="#" onclick="openDeleteModal(<?php echo $item['id']; ?>); return false;">Excluir</a>
+                        <a href="#" onclick="openDeleteModal(<?php echo $item['id']; ?>, '<?php echo htmlspecialchars(addslashes($item['nome'])); ?>'); return false;">Excluir</a>
                     </td>
                 <?php endif; ?>
             </tr>
@@ -121,6 +121,7 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div id="deleteModal" class="modal" role="dialog" aria-modal="true" tabindex="-1" style="display:none;">
         <div class="modal-box">
             <span class="close" id="closeDeleteModal" aria-label="Fechar">&times;</span>
+            <div id="deleteItemInfo" style="margin-bottom:10px; font-weight:bold; color:#d32f2f;"></div>
             <form id="deleteForm" method="POST" action="delete_item.php">
                 <input type="hidden" name="id" id="delete_id">
                 <input type="hidden" name="confirmed" id="delete_confirmed" value="0">
@@ -142,13 +143,15 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
         const deleteReason = document.getElementById('delete_reason');
         const confirmedInput = document.getElementById('delete_confirmed');
         const closeBtn = document.getElementById('closeDeleteModal');
+        const deleteItemInfo = document.getElementById('deleteItemInfo');
         let lastFocus = null;
 
-        window.openDeleteModal = function(id) {
+        window.openDeleteModal = function(id, nome) {
             lastFocus = document.activeElement;
             deleteId.value = id;
             deleteReason.value = '';
             confirmedInput.value = '0';
+            deleteItemInfo.textContent = 'Item selecionado: ' + nome;
             deleteModal.style.display = 'flex';
             setTimeout(() => deleteModal.classList.add('modal-open'), 10);
             deleteModal.focus();
