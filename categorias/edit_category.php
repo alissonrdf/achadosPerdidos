@@ -69,6 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <label for="image">Imagem (deixe em branco para manter a atual):</label>
             <input type="file" name="image" id="image" accept="image/*">
+            <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 10MB.</small>
 
             <div class="button-container">
                 <button type="submit" class="save-button">Salvar Alterações</button>

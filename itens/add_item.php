@@ -16,6 +16,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Verificar se uma imagem foi enviada
     if (!empty($_FILES['image']['name'])) {
+        // Validação do tipo de arquivo (apenas imagens)
+        $allowedTypes = [
+            'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'
+        ];
+        $fileType = mime_content_type($_FILES['image']['tmp_name']);
+        if (!in_array($fileType, $allowedTypes)) {
+            echo "Tipo de arquivo não permitido. Envie apenas imagens (jpg, png, gif, webp, bmp).";
+            exit();
+        }
+        // Validação do tamanho do arquivo (máx. 2MB)
+        $maxFileSize = 10 * 1024 * 1024; // 2MB
+        if ($_FILES['image']['size'] > $maxFileSize) {
+            echo "O arquivo excede o tamanho máximo permitido de 10MB.";
+            exit();
+        }
         // Gerar um nome seguro e único para a imagem usando o nome do item
         $imageName = generateSafeImageName($name);
         $targetPath = "../uploads/" . $imageName;
@@ -81,7 +96,8 @@ $categories = $category_stmt->fetchAll(PDO::FETCH_ASSOC);
             </select>
 
             <label for="image">Imagem:</label>
-            <input type="file" name="image" id="image">
+            <input type="file" name="image" id="image" accept="image/*" />
+            <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 10MB.</small>
 
             <div class="button-container">
                 <button type="submit" class="save-button">Cadastrar Item</button>

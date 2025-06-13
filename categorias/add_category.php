@@ -51,7 +51,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="text" name="name" id="name" required>
 
             <label for="image">Imagem Padrão:</label>
-            <input type="file" name="image" id="image">
+            <input type="file" name="image" id="image" accept="image/*">
+            <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 2MB.</small>
 
             <div class="button-container">
                 <button type="submit" class="save-button">Cadastrar Categoria</button>
