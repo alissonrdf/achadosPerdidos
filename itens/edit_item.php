@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($description !== $item['descricao']) {
         $changes['descricao'] = ['de' => $item['descricao'], 'para' => $description];
     }
-    if ($category_id != $item['categoria_id']) {
+    if ($category_id !== $item['categoria_id']) {
         $changes['categoria_id'] = ['de' => $item['categoria_id'], 'para' => $category_id];
     }
 
