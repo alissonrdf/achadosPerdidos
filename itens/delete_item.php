@@ -16,13 +16,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirmed = $_POST['confirmed'] ?? '';
     if ($id && $reason !== '' && $confirmed === '1') {
         $deleted_by = $_SESSION['user_id'];
-        $pdo->beginTransaction();
-        $stmt = $pdo->prepare("UPDATE itens SET deleted_at = NOW(), deleted_by = ?, is_deleted = TRUE WHERE id = ?");
-        $stmt->execute([$deleted_by, $id]);
-        registerLog($pdo, $deleted_by, $id, 'delete_item', $reason);
-        $pdo->commit();
-        header("Location: list_items.php");
-        exit();
+        try {
+            $pdo->beginTransaction();
+            $stmt = $pdo->prepare("UPDATE itens SET deleted_at = NOW(), deleted_by = ?, is_deleted = TRUE WHERE id = ?");
+            $stmt->execute([$deleted_by, $id]);
+            registerLog($pdo, $deleted_by, $id, 'delete_item', $reason);
+            $pdo->commit();
+            header("Location: list_items.php");
+            exit();
+        } catch (PDOException $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            registerLog($pdo, $deleted_by, $id, 'delete_item_error', $e->getMessage());
+            $error = 'Ocorreu um erro ao tentar excluir o item. Por favor, tente novamente mais tarde.';
+        }
     } else {
         $error = 'Confirmação e motivo da exclusão são obrigatórios.';
     }
