@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_ACTIVE) {
     // Limpa todas as variáveis de sessão
     $_SESSION = array();
 
-    // Destroi o cookie da sessão no navegador, se existir
+    // Destrói o cookie da sessão no navegador, se existir
     if (ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
         setcookie(session_name(), '', time() - 42000,
@@ -15,7 +15,7 @@ if (session_status() === PHP_SESSION_ACTIVE) {
         );
     }
 
-    // Destroi a sessão
+    // Destrói a sessão
     session_destroy();
 }
 
