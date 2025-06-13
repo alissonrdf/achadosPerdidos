@@ -113,7 +113,7 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td><?php echo htmlspecialchars($item['nome']); ?></td>
                 <td><?php echo htmlspecialchars($item['descricao']); ?></td>
                 <td><?php echo htmlspecialchars($item['categoria_nome']); ?></td>
-                <td><img src="uploads/<?php echo htmlspecialchars($item['foto']) ? htmlspecialchars($item['foto']) : 'default.webp'; ?>" alt="Imagem do Item" width="50" onclick="openModal(this.src)" style="cursor: pointer;"/></td>
+                <td><img src="uploads/<?php echo !empty($item['foto']) ? htmlspecialchars($item['foto']) : 'default.webp'; ?>" alt="Imagem do Item" width="50" onclick="openModal(this.src)" style="cursor: pointer;"/></td>
                 <td><?php echo date("d/m/Y", strtotime($item['created_at'])); ?></td>
             </tr>
             <?php endforeach; ?>
