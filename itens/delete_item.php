@@ -50,8 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
                 'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
             ]);
-            // Exibe mensagem genérica para o usuário
+            // Exibe mensagem genérica para o usuário e interrompe execução
             $error = 'Ocorreu um erro ao tentar excluir o item. Por favor, tente novamente mais tarde.';
+            echo '<p style="color:red;">' . htmlspecialchars($error) . '</p>';
+            exit();
         }
     } else {
         $error = 'Confirmação e motivo da exclusão são obrigatórios.';

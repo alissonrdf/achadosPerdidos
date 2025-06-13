@@ -43,7 +43,23 @@ class ItemCrudTest extends TestCase
     {
         $stmt = $this->pdo->prepare("INSERT INTO itens (nome, descricao, categoria_id, foto, created_by) VALUES (?, ?, ?, ?, ?)");
         $stmt->execute(['Item1', 'Desc', 1, 'default.webp', 1]);
-        $this->assertEquals(1, $this->pdo->lastInsertId());
+        $itemId = $this->pdo->lastInsertId();
+        logAction($this->pdo, [
+            'user_id' => 99,
+            'entity_id' => $itemId,
+            'entity_type' => 'item',
+            'action' => 'create_item',
+            'reason' => 'Item criado',
+            'changes' => json_encode(['nome' => ['de' => null, 'para' => 'Item1']]),
+            'status' => 'success',
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'PHPUnit'
+        ]);
+        $stmt = $this->pdo->query("SELECT * FROM logs WHERE entity_id = $itemId AND action = 'create_item'");
+        $log = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->assertNotEmpty($log);
+        $this->assertEquals('success', $log['status']);
+        $this->assertEquals('item', $log['entity_type']);
     }
 
     public function testEditItem(): void
@@ -51,8 +67,22 @@ class ItemCrudTest extends TestCase
         $this->pdo->exec("INSERT INTO itens (nome, descricao, categoria_id, foto, created_by) VALUES ('Item1', 'Desc', 1, 'default.webp', 1)");
         $stmt = $this->pdo->prepare("UPDATE itens SET nome = ? WHERE id = ?");
         $stmt->execute(['NovoNome', 1]);
-        $stmt = $this->pdo->query("SELECT nome FROM itens WHERE id = 1");
-        $this->assertEquals('NovoNome', $stmt->fetchColumn());
+        logAction($this->pdo, [
+            'user_id' => 99,
+            'entity_id' => 1,
+            'entity_type' => 'item',
+            'action' => 'edit_item',
+            'reason' => 'Item editado',
+            'changes' => json_encode(['nome' => ['de' => 'Item1', 'para' => 'NovoNome']]),
+            'status' => 'success',
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'PHPUnit'
+        ]);
+        $stmt = $this->pdo->query("SELECT * FROM logs WHERE entity_id = 1 AND action = 'edit_item'");
+        $log = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->assertNotEmpty($log);
+        $this->assertEquals('success', $log['status']);
+        $this->assertEquals('item', $log['entity_type']);
     }
 
     public function testDeleteItem(): void
@@ -60,7 +90,21 @@ class ItemCrudTest extends TestCase
         $this->pdo->exec("INSERT INTO itens (nome, descricao, categoria_id, foto, created_by) VALUES ('Item1', 'Desc', 1, 'default.webp', 1)");
         $stmt = $this->pdo->prepare("UPDATE itens SET is_deleted = 1, deleted_by = ? WHERE id = ?");
         $stmt->execute([2, 1]);
-        $stmt = $this->pdo->query("SELECT is_deleted FROM itens WHERE id = 1");
-        $this->assertEquals(1, $stmt->fetchColumn());
+        logAction($this->pdo, [
+            'user_id' => 2,
+            'entity_id' => 1,
+            'entity_type' => 'item',
+            'action' => 'delete_item',
+            'reason' => 'Item excluído',
+            'changes' => null,
+            'status' => 'success',
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'PHPUnit'
+        ]);
+        $stmt = $this->pdo->query("SELECT * FROM logs WHERE entity_id = 1 AND action = 'delete_item'");
+        $log = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->assertNotEmpty($log);
+        $this->assertEquals('success', $log['status']);
+        $this->assertEquals('item', $log['entity_type']);
     }
 }

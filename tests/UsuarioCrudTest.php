@@ -41,7 +41,23 @@ class UsuarioCrudTest extends TestCase
     {
         $stmt = $this->pdo->prepare("INSERT INTO usuarios (username, email, password_hash, role) VALUES (?, ?, ?, ?)");
         $stmt->execute(['user1', 'user1@email.com', 'hash', 'user']);
-        $this->assertEquals(1, $this->pdo->lastInsertId());
+        $userId = $this->pdo->lastInsertId();
+        logAction($this->pdo, [
+            'user_id' => 99,
+            'entity_id' => $userId,
+            'entity_type' => 'usuario',
+            'action' => 'create_user',
+            'reason' => 'Usuário criado',
+            'changes' => json_encode(['username' => ['de' => null, 'para' => 'user1']]),
+            'status' => 'success',
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'PHPUnit'
+        ]);
+        $stmt = $this->pdo->query("SELECT * FROM logs WHERE entity_id = $userId AND action = 'create_user'");
+        $log = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->assertNotEmpty($log);
+        $this->assertEquals('success', $log['status']);
+        $this->assertEquals('usuario', $log['entity_type']);
     }
 
     public function testEditUsuario(): void
@@ -49,8 +65,22 @@ class UsuarioCrudTest extends TestCase
         $this->pdo->exec("INSERT INTO usuarios (username, email, password_hash, role) VALUES ('user1', 'user1@email.com', 'hash', 'user')");
         $stmt = $this->pdo->prepare("UPDATE usuarios SET username = ? WHERE id = ?");
         $stmt->execute(['novoUser', 1]);
-        $stmt = $this->pdo->query("SELECT username FROM usuarios WHERE id = 1");
-        $this->assertEquals('novoUser', $stmt->fetchColumn());
+        logAction($this->pdo, [
+            'user_id' => 99,
+            'entity_id' => 1,
+            'entity_type' => 'usuario',
+            'action' => 'edit_user',
+            'reason' => 'Usuário editado',
+            'changes' => json_encode(['username' => ['de' => 'user1', 'para' => 'novoUser']]),
+            'status' => 'success',
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'PHPUnit'
+        ]);
+        $stmt = $this->pdo->query("SELECT * FROM logs WHERE entity_id = 1 AND action = 'edit_user'");
+        $log = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->assertNotEmpty($log);
+        $this->assertEquals('edit_user', $log['action']);
+        $this->assertEquals('usuario', $log['entity_type']);
     }
 
     public function testDeleteUsuario(): void
@@ -58,7 +88,21 @@ class UsuarioCrudTest extends TestCase
         $this->pdo->exec("INSERT INTO usuarios (username, email, password_hash, role) VALUES ('user1', 'user1@email.com', 'hash', 'user')");
         $stmt = $this->pdo->prepare("UPDATE usuarios SET is_deleted = 1, deleted_by = ? WHERE id = ?");
         $stmt->execute([2, 1]);
-        $stmt = $this->pdo->query("SELECT is_deleted FROM usuarios WHERE id = 1");
-        $this->assertEquals(1, $stmt->fetchColumn());
+        logAction($this->pdo, [
+            'user_id' => 2,
+            'entity_id' => 1,
+            'entity_type' => 'usuario',
+            'action' => 'delete_user',
+            'reason' => 'Usuário excluído',
+            'changes' => null,
+            'status' => 'success',
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'PHPUnit'
+        ]);
+        $stmt = $this->pdo->query("SELECT * FROM logs WHERE entity_id = 1 AND action = 'delete_user'");
+        $log = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->assertNotEmpty($log);
+        $this->assertEquals('delete_user', $log['action']);
+        $this->assertEquals('usuario', $log['entity_type']);
     }
 }

@@ -95,8 +95,18 @@ O arquivo `sql/database_setup.sql` contém todas as instruções para criar as t
 ### Exemplo de registro de log de edição
 ```json
 {
-  "nome": { "de": "Carteiras", "para": "Carteiras e Bolsas" },
-  "imagem_categoria": { "de": "carteira.webp", "para": "carteira_bolsa.webp" }
+  "user_id": 2,
+  "entity_id": 5,
+  "entity_type": "categoria",
+  "action": "edit_category",
+  "reason": "Categoria editada",
+  "changes": {
+    "nome": { "de": "Carteiras", "para": "Carteiras e Bolsas" },
+    "imagem_categoria": { "de": "carteira.webp", "para": "carteira_bolsa.webp" }
+  },
+  "status": "success",
+  "ip_address": "127.0.0.1",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 }
 ```
 
