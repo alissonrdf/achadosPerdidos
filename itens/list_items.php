@@ -104,7 +104,7 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <td>
                         <a href="edit_item.php?id=<?php echo $item['id']; ?>">Editar</a> |
-                        <a href="#" onclick="openDeleteModal(<?php echo $item['id']; ?>, <?php echo json_encode($item['nome']); ?>); return false;">Excluir</a>
+                        <a href='#' onclick='openDeleteModal(<?php echo $item['id']; ?>, <?php echo json_encode($item['nome']); ?>); return false;'>Excluir</a>
                     </td>
                 <?php endif; ?>
             </tr>
@@ -136,44 +136,43 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <script>
-    (function() {
-        const deleteModal = document.getElementById('deleteModal');
-        const deleteForm = document.getElementById('deleteForm');
-        const deleteId = document.getElementById('delete_id');
-        const deleteReason = document.getElementById('delete_reason');
-        const confirmedInput = document.getElementById('delete_confirmed');
-        const closeBtn = document.getElementById('closeDeleteModal');
-        const deleteItemInfo = document.getElementById('deleteItemInfo');
-        let lastFocus = null;
+    // Modal de exclusão
+    const deleteModal = document.getElementById('deleteModal');
+    const deleteForm = document.getElementById('deleteForm');
+    const deleteId = document.getElementById('delete_id');
+    const deleteReason = document.getElementById('delete_reason');
+    const confirmedInput = document.getElementById('delete_confirmed');
+    const closeBtn = document.getElementById('closeDeleteModal');
+    const deleteItemInfo = document.getElementById('deleteItemInfo');
+    let lastFocus = null;
 
-        window.openDeleteModal = function(id, nome) {
-            lastFocus = document.activeElement;
-            deleteId.value = id;
-            deleteReason.value = '';
-            confirmedInput.value = '0';
-            deleteItemInfo.textContent = 'Item selecionado: ' + nome;
-            deleteModal.style.display = 'flex';
-            setTimeout(() => deleteModal.classList.add('modal-open'), 10);
-            deleteModal.focus();
-        };
+    window.openDeleteModal = function(id, nome) {
+        lastFocus = document.activeElement;
+        deleteId.value = id;
+        deleteReason.value = '';
+        confirmedInput.value = '0';
+        deleteItemInfo.textContent = 'Item selecionado: ' + nome;
+        deleteModal.style.display = 'flex';
+        setTimeout(() => deleteModal.classList.add('modal-open'), 10);
+        deleteModal.focus();
+    };
 
-        window.closeDeleteModal = function() {
-            deleteModal.classList.remove('modal-open');
-            setTimeout(() => { deleteModal.style.display = 'none'; }, 200);
-            if (lastFocus) lastFocus.focus();
-        };
+    window.closeDeleteModal = function() {
+        deleteModal.classList.remove('modal-open');
+        setTimeout(() => { deleteModal.style.display = 'none'; }, 200);
+        if (lastFocus) lastFocus.focus();
+    };
 
-        deleteModal.addEventListener('click', e => { if (e.target === deleteModal) closeDeleteModal(); });
-        closeBtn.addEventListener('click', closeDeleteModal);
+    deleteModal.addEventListener('click', e => { if (e.target === deleteModal) closeDeleteModal(); });
+    closeBtn.addEventListener('click', closeDeleteModal);
 
-        deleteForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (confirm('Tem certeza que deseja excluir este item?')) {
-                confirmedInput.value = '1';
-                deleteForm.submit();
-            }
-        });
-    })();
+    deleteForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (confirm('Tem certeza que deseja excluir este item?')) {
+            confirmedInput.value = '1';
+            deleteForm.submit();
+        }
+    });
     </script>
 </body>
 </html>
