@@ -17,6 +17,11 @@ Thumbs.db
 # Arquivos temporários
 *.tmp
 *.temp
+*.bak
+# Arquivos de teste
+test_*.php
+# Pasta temp de PDFs
+/temp/*
 # Teste de cobertura
 coverage/
 # Uploads de imagens de teste e uploads em geral (exceto imagens padrão)

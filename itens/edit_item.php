@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 
 include '../db.php';
 include '../utils/image_utils.php'; // Inclui a função de processamento de imagem
+require_once '../utils/log_utils.php'; // Para registrar logs
 
 $id = $_GET['id'];
 $sql = "SELECT * FROM itens WHERE id = ? AND is_deleted = FALSE";
@@ -26,6 +27,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $category_id = $_POST['category_id'];
     $updated_by = $_SESSION['user_id'];
     $image = $item['foto']; // Mantém a imagem atual por padrão
+    $changes = [];
+
+    if ($name !== $item['nome']) {
+        $changes['nome'] = ['de' => $item['nome'], 'para' => $name];
+    }
+    if ($description !== $item['descricao']) {
+        $changes['descricao'] = ['de' => $item['descricao'], 'para' => $description];
+    }
+    if ($category_id !== $item['categoria_id']) {
+        $changes['categoria_id'] = ['de' => $item['categoria_id'], 'para' => $category_id];
+    }
 
     // Verificar se o usuário enviou uma nova imagem
     if (!empty($_FILES['image']['name'])) {
@@ -35,6 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Processar a nova imagem
         if (processImage($_FILES['image'], $targetPath)) {
+            $changes['foto'] = ['de' => $item['foto'], 'para' => $imageName];
             $image = $imageName; // Atualiza o nome da imagem no banco de dados
         } else {
             echo "Erro ao processar a imagem.";
@@ -45,6 +58,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "UPDATE itens SET nome = ?, descricao = ?, categoria_id = ?, foto = ?, updated_at = NOW(), updated_by = ? WHERE id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$name, $description, $category_id, $image, $updated_by, $id]);
+
+    // Log de edição de item
+    logAction($pdo, [
+        'user_id'     => $updated_by,
+        'entity_id'   => $id,
+        'entity_type' => 'item',
+        'action'      => 'edit_item',
+        'reason'      => 'Item editado: ' . $name,
+        'changes'     => !empty($changes) ? json_encode($changes, JSON_UNESCAPED_UNICODE) : null,
+        'status'      => 'success',
+        'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+        'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+    ]);
 
     header("Location: list_items.php");
     exit();

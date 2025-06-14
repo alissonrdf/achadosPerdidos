@@ -22,9 +22,11 @@ CREATE TABLE categorias (
     updated_at TIMESTAMP NULL DEFAULT NULL,
     updated_by INT DEFAULT NULL,
     deleted_at TIMESTAMP NULL DEFAULT NULL,
+    deleted_by INT DEFAULT NULL,
     is_deleted BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (created_by) REFERENCES usuarios(id) ON DELETE SET NULL,
-    FOREIGN KEY (updated_by) REFERENCES usuarios(id) ON DELETE SET NULL
+    FOREIGN KEY (updated_by) REFERENCES usuarios(id) ON DELETE SET NULL,
+    FOREIGN KEY (deleted_by) REFERENCES usuarios(id) ON DELETE SET NULL
 );
 
 -- Tabela de itens, associada a categorias e com referência à imagem da categoria como padrão
@@ -51,10 +53,14 @@ CREATE TABLE itens (
 CREATE TABLE logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
-    item_id INT,
+    entity_id INT NULL,
+    entity_type VARCHAR(30) NULL,
     action VARCHAR(50),
     reason TEXT,
+    changes TEXT NULL,
+    status ENUM('success','error') DEFAULT 'success',
+    ip_address VARCHAR(45) NULL,
+    user_agent VARCHAR(255) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE SET NULL,
-    FOREIGN KEY (item_id) REFERENCES itens(id) ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES usuarios(id) ON DELETE SET NULL
 );

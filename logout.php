@@ -1,5 +1,22 @@
 <?php
 session_start();
+require_once 'db.php';
+require_once 'utils/log_utils.php';
+
+// Log de logout, se houver usuário logado
+if (isset($_SESSION['user_id'])) {
+    logAction($pdo, [
+        'user_id'     => $_SESSION['user_id'],
+        'entity_id'   => null,
+        'entity_type' => null,
+        'action'      => 'logout',
+        'reason'      => 'Logout do usuário',
+        'changes'     => null,
+        'status'      => 'success',
+        'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+        'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+    ]);
+}
 
 // Verifica se há uma sessão ativa antes de destruí-la
 if (session_status() === PHP_SESSION_ACTIVE) {
