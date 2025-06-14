@@ -10,6 +10,7 @@ Este é um sistema web para gerenciar itens encontrados e perdidos, permitindo o
 - **Autenticação e Controle de Acesso**: Usuários comuns podem gerenciar itens e categorias, enquanto administradores têm acesso completo ao sistema, incluindo o gerenciamento de usuários.
 - **Upload e Processamento de Imagens**: Imagens enviadas são processadas e salvas no formato WebP para otimização.
 - **Auditoria Detalhada de Logs**: Todas as ações administrativas são registradas em logs detalhados, incluindo o tipo de entidade afetada, alterações realizadas e informações de contexto.
+- **Relatórios de Auditoria**: Administradores podem acessar relatórios completos dos logs do sistema, com recursos de filtragem, paginação e exportação para CSV.
 
 ## Estrutura de Diretórios
 
@@ -148,6 +149,7 @@ logAction($pdo, [
    - Filtre itens por data e categoria na página inicial (`index.php`).
 4. **Gerenciamento de Categorias**: Acesse a seção "Categorias" para gerenciar as categorias dos itens.
 5. **Gerenciamento de Usuários**: Administradores podem acessar a seção "Usuários" para gerenciar contas de usuários.
+6. **Relatórios de Logs**: Administradores podem acessar a seção "Relatórios" para visualizar e exportar relatórios de logs.
 
 ## Boas Práticas de Segurança
 
