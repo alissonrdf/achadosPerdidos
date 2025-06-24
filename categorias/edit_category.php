@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 
 include '../db.php';
 include '../utils/image_utils.php'; // Inclui a função de processamento de imagem
+require_once '../utils/log_utils.php'; // Para registrar logs
 
 $id = $_GET['id'];
 $sql = "SELECT * FROM categorias WHERE id = ? AND is_deleted = FALSE";
@@ -23,6 +24,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $updated_by = $_SESSION['user_id'];
     $image = $categoria['imagem_categoria']; // Manter a imagem atual por padrão
+    $changes = [];
+
+    // Verificar alterações
+    if ($name !== $categoria['nome']) {
+        $changes['nome'] = ['de' => $categoria['nome'], 'para' => $name];
+    }
 
     // Verificar se o usuário enviou uma nova imagem
     if (!empty($_FILES['image']['name'])) {
@@ -32,6 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Processar a nova imagem
         if (processImage($_FILES['image'], $targetPath)) {
+            $changes['imagem_categoria'] = ['de' => $categoria['imagem_categoria'], 'para' => $imageName];
             $image = $imageName; // Atualiza o nome da imagem no banco de dados
         } else {
             echo "Erro ao processar a imagem.";
@@ -42,6 +50,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "UPDATE categorias SET nome = ?, imagem_categoria = ?, updated_at = NOW(), updated_by = ? WHERE id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$name, $image, $updated_by, $id]);
+
+    // Log de edição de categoria
+    logAction($pdo, [
+        'user_id'     => $updated_by,
+        'entity_id'   => $id,
+        'entity_type' => 'categoria',
+        'action'      => 'edit_category',
+        'reason'      => 'Categoria editada: ' . $name,
+        'changes'     => !empty($changes) ? json_encode($changes, JSON_UNESCAPED_UNICODE) : null,
+        'status'      => 'success',
+        'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+        'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+    ]);
 
     header("Location: list_categories.php");
     exit();

@@ -1,6 +1,7 @@
 <?php
 session_start();
 include 'db.php';
+require_once 'utils/log_utils.php';
 
 $error = '';
 
@@ -16,6 +17,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($user && password_verify($password, $user['password_hash'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_role'] = $user['role']; // Salva o papel do usuário na sessão
+        // Log de login
+        logAction($pdo, [
+            'user_id'     => $user['id'],
+            'entity_id'   => null,
+            'entity_type' => null,
+            'action'      => 'login',
+            'reason'      => 'Login realizado',
+            'changes'     => null,
+            'status'      => 'success',
+            'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+            'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+        ]);
         header("Location: dashboard.php");
         exit();
     } else {

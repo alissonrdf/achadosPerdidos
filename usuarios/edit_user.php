@@ -6,6 +6,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
 }
 
 include '../db.php';
+require_once '../utils/log_utils.php'; // Para registrar logs
 
 $id = $_GET['id'];
 $sql = "SELECT * FROM usuarios WHERE id = ?";
@@ -18,16 +19,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $updated_at = date('Y-m-d H:i:s');
     $password_hash = $usuario['password_hash'];
-    $role = $_POST['role']; // Captura o papel do usuário
+    $role = $_POST['role'];
+    $changes = [];
 
+    if ($username !== $usuario['username']) {
+        $changes['username'] = ['de' => $usuario['username'], 'para' => $username];
+    }
+    if ($email !== $usuario['email']) {
+        $changes['email'] = ['de' => $usuario['email'], 'para' => $email];
+    }
+    if ($role !== $usuario['role']) {
+        $changes['role'] = ['de' => $usuario['role'], 'para' => $role];
+    }
     if (!empty($_POST['password'])) {
         $password_hash = password_hash($_POST['password'], PASSWORD_BCRYPT);
+        $changes['password'] = ['de' => '***', 'para' => '***'];
     }
 
-    // Atualizar usuário
     $sql = "UPDATE usuarios SET username = ?, email = ?, password_hash = ?, role = ?, updated_at = ? WHERE id = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$username, $email, $password_hash, $role, $updated_at, $id]);
+
+    // Log de edição de usuário
+    logAction($pdo, [
+        'user_id'     => $_SESSION['user_id'],
+        'entity_id'   => $id,
+        'entity_type' => 'usuario',
+        'action'      => 'edit_user',
+        'reason'      => 'Usuário editado: ' . $username,
+        'changes'     => !empty($changes) ? json_encode($changes, JSON_UNESCAPED_UNICODE) : null,
+        'status'      => 'success',
+        'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+        'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+    ]);
 
     header("Location: list_users.php");
     exit();
