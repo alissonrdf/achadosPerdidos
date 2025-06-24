@@ -16,15 +16,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $permite_foto = isset($_POST['permite_foto']) ? 1 : 0;
 
     if (!empty($_FILES['image']['name'])) {
-       // Gerar um nome seguro e único para a imagem usando o nome do item
-       $imageName = generateSafeImageName($name);
-       $targetPath = "../uploads/" . $imageName;
+        // Verifica o tamanho do arquivo (10MB = 10 * 1024 * 1024 bytes)
+        if ($_FILES['image']['size'] > 10 * 1024 * 1024) {
+            echo "Erro: O arquivo excede o limite de 2MB.";
+            exit();
+        }
+        // Gerar um nome seguro e único para a imagem usando o nome do item
+        $imageName = generateSafeImageName($name);
+        $targetPath = "../uploads/" . $imageName;
 
         // Processar e salvar a imagem em WebP
         if (processImage($_FILES['image'], $targetPath)) {
             $image = $imageName;
         } else {
             echo "Erro ao processar a imagem.";
+            exit();
         }
     }
 
@@ -68,7 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <label for="image">Imagem Padrão:</label>
             <input type="file" name="image" id="image" accept="image/*">
-            <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 2MB.</small>
+            <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 10MB.</small>
 
             <label for="permite_foto">
                 <input type="checkbox" name="permite_foto" id="permite_foto" checked>
