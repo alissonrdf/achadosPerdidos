@@ -14,7 +14,7 @@ $category_stmt->execute();
 $categories = $category_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Consulta para listar itens com busca e filtro
-$sql = "SELECT itens.*, categorias.nome AS categoria_nome 
+$sql = "SELECT itens.*, categorias.nome AS categoria_nome, categorias.permite_foto 
         FROM itens 
         LEFT JOIN categorias ON itens.categoria_id = categorias.id 
         WHERE itens.is_deleted = FALSE";
@@ -88,6 +88,7 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <th>Nome</th>
                 <th>Descrição</th>
                 <th>Categoria</th>
+                <th>Permite Foto?</th>
                 <th>Imagem</th>
                 <th>Data de Cadastro</th>
                 <?php if (isset($_SESSION['user_id'])): ?>
@@ -99,6 +100,7 @@ $itens = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td><?php echo htmlspecialchars($item['nome']); ?></td>
                 <td><?php echo htmlspecialchars($item['descricao']); ?></td>
                 <td><?php echo htmlspecialchars($item['categoria_nome']); ?></td>
+                <td><?php echo isset($item['permite_foto']) ? ($item['permite_foto'] ? 'Sim' : 'Não') : ''; ?></td>
                 <td><img src="../uploads/<?php echo !empty($item['foto']) ? htmlspecialchars($item['foto']) : 'default.webp'; ?>" alt="Imagem do Item" width="50" onclick="openModal(this.src)" style="cursor: pointer;" /></td>
                 <td><?php echo date("d/m/Y", strtotime($item['created_at'])); ?></td>
                 <?php if (isset($_SESSION['user_id'])): ?>

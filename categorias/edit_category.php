@@ -24,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $updated_by = $_SESSION['user_id'];
     $image = $categoria['imagem_categoria']; // Manter a imagem atual por padrão
+    $permite_foto = isset($_POST['permite_foto']) ? 1 : 0;
     $changes = [];
 
     // Verificar alterações
@@ -46,10 +47,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // Verificar se a opção de permitir fotos foi alterada
+    if ($permite_foto != $categoria['permite_foto']) {
+        $changes['permite_foto'] = ['de' => $categoria['permite_foto'], 'para' => $permite_foto];
+    }
+
     // Atualizar a categoria no banco de dados
-    $sql = "UPDATE categorias SET nome = ?, imagem_categoria = ?, updated_at = NOW(), updated_by = ? WHERE id = ?";
+    $sql = "UPDATE categorias SET nome = ?, imagem_categoria = ?, permite_foto = ?, updated_at = NOW(), updated_by = ? WHERE id = ?";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$name, $image, $updated_by, $id]);
+    $stmt->execute([$name, $image, $permite_foto, $updated_by, $id]);
 
     // Log de edição de categoria
     logAction($pdo, [
@@ -91,6 +97,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="image">Imagem (deixe em branco para manter a atual):</label>
             <input type="file" name="image" id="image" accept="image/*">
             <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 10MB.</small>
+
+            <label for="permite_foto">
+                <input type="checkbox" name="permite_foto" id="permite_foto" value="1" <?php echo ($categoria['permite_foto'] ? 'checked' : ''); ?>>
+                Permitir cadastro de fotos para itens desta categoria
+            </label>
 
             <div class="button-container">
                 <button type="submit" class="save-button">Salvar Alterações</button>

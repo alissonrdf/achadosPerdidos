@@ -13,6 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $created_by = $_SESSION['user_id'];
     $image = 'default.webp';
+    $permite_foto = isset($_POST['permite_foto']) ? 1 : 0;
 
     if (!empty($_FILES['image']['name'])) {
        // Gerar um nome seguro e único para a imagem usando o nome do item
@@ -27,9 +28,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    $sql = "INSERT INTO categorias (nome, imagem_categoria, created_by) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO categorias (nome, imagem_categoria, created_by, permite_foto) VALUES (?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$name, $image, $created_by]);
+    $stmt->execute([$name, $image, $created_by, $permite_foto]);
     $categoryId = $pdo->lastInsertId(); // Recupera o ID da categoria recém-criada
 
     // Log de criação de categoria
@@ -68,6 +69,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="image">Imagem Padrão:</label>
             <input type="file" name="image" id="image" accept="image/*">
             <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 2MB.</small>
+
+            <label for="permite_foto">
+                <input type="checkbox" name="permite_foto" id="permite_foto" checked>
+                Permitir cadastro de fotos para itens desta categoria
+            </label>
 
             <div class="button-container">
                 <button type="submit" class="save-button">Cadastrar Categoria</button>

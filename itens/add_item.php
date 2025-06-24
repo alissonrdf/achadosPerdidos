@@ -15,8 +15,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $category_id = $_POST['category_id'];
     $created_by = $_SESSION['user_id'];
 
-    // Verificar se uma imagem foi enviada
-    if (!empty($_FILES['image']['name'])) {
+    // Buscar se a categoria permite foto
+    $catStmt = $pdo->prepare("SELECT imagem_categoria, permite_foto FROM categorias WHERE id = ?");
+    $catStmt->execute([$category_id]);
+    $category = $catStmt->fetch();
+    $permite_foto = $category ? $category['permite_foto'] : 1;
+
+    if ($permite_foto && !empty($_FILES['image']['name'])) {
         // Validação do tipo de arquivo (apenas imagens)
         $allowedTypes = [
             'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'
@@ -44,11 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         }
     } else {
-        // Caso não haja imagem, buscar a imagem padrão da categoria
-        $stmt = $pdo->prepare("SELECT imagem_categoria FROM categorias WHERE id = ?");
-        $stmt->execute([$category_id]);
-        $category = $stmt->fetch();
-
+        // Caso não haja imagem ou não permita foto, buscar a imagem padrão da categoria
         if ($category && !empty($category['imagem_categoria'])) {
             $image = $category['imagem_categoria']; // Usa a imagem padrão da categoria
         } else {
@@ -113,6 +114,54 @@ $categories = $category_stmt->fetchAll(PDO::FETCH_ASSOC);
             <label for="image">Imagem:</label>
             <input type="file" name="image" id="image" accept="image/*" />
             <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 10MB.</small>
+            <script>
+            // Desabilita o campo de imagem se a categoria não permitir foto
+            const categorySelect = document.getElementById('category_id');
+            const imageInput = document.getElementById('image');
+            const categories = <?php echo json_encode($categories); ?>;
+            function updateImageInput() {
+                const selected = categories.find(c => c.id == categorySelect.value);
+                if (selected && selected.permite_foto == 0) {
+                    imageInput.disabled = true;
+                    imageInput.value = '';
+                    imageInput.title = 'Esta categoria não permite cadastro de fotos.';
+                } else {
+                    imageInput.disabled = false;
+                    imageInput.title = '';
+                }
+            }
+            categorySelect.addEventListener('change', updateImageInput);
+            window.addEventListener('DOMContentLoaded', updateImageInput);
+            </script>
+
+            <!-- Adiciona aviso dinâmico se a categoria não permite foto -->
+            <div id="aviso-permite-foto" style="color: red;"></div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const categorySelect = document.getElementById('category_id');
+                    const imageInput = document.getElementById('image');
+                    const avisoDiv = document.getElementById('aviso-permite-foto');
+
+                    // Mapeia categorias e se permitem foto
+                    const categoriasPermiteFoto = {};
+                    <?php foreach ($categories as $cat): ?>
+                        categoriasPermiteFoto[<?php echo $cat['id']; ?>] = <?php echo $cat['permite_foto'] ? 'true' : 'false'; ?>;
+                    <?php endforeach; ?>
+
+                    function atualizarAviso() {
+                        const selected = categorySelect.value;
+                        if (categoriasPermiteFoto[selected] === false) {
+                            avisoDiv.textContent = 'Atenção: Esta categoria não permite o cadastro de fotos.';
+                            imageInput.disabled = true;
+                        } else {
+                            avisoDiv.textContent = '';
+                            imageInput.disabled = false;
+                        }
+                    }
+                    categorySelect.addEventListener('change', atualizarAviso);
+                    atualizarAviso();
+                });
+            </script>
 
             <div class="button-container">
                 <button type="submit" class="save-button">Cadastrar Item</button>
