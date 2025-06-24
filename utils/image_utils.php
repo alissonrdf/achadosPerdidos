@@ -95,3 +95,13 @@ function generateSafeImageName($referenceName) {
     $sanitized = preg_replace('/[^A-Za-z0-9_\-]/', '_', $referenceName);
     return $sanitized . '_' . uniqid() . '.webp';
 }
+
+/**
+ * Verifica se o arquivo de imagem está dentro do tamanho permitido.
+ * @param array $file Arquivo enviado via $_FILES
+ * @param int $maxSize Tamanho máximo em bytes (padrão: 10MB)
+ * @return bool
+ */
+function isImageSizeAllowed($file, $maxSize = 10485760) { // 10 * 1024 * 1024
+    return isset($file['size']) && $file['size'] <= $maxSize;
+}

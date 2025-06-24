@@ -15,9 +15,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $image = 'default.webp';
 
     if (!empty($_FILES['image']['name'])) {
-       // Gerar um nome seguro e único para a imagem usando o nome do item
-       $imageName = generateSafeImageName($name);
-       $targetPath = "../uploads/" . $imageName;
+        if (!isImageSizeAllowed($_FILES['image'])) {
+            echo "O arquivo excede o tamanho máximo permitido de 10MB.";
+            exit();
+        }
+        // Gerar um nome seguro e único para a imagem usando o nome do item
+        $imageName = generateSafeImageName($name);
+        $targetPath = "../uploads/" . $imageName;
 
         // Processar e salvar a imagem em WebP
         if (processImage($_FILES['image'], $targetPath)) {
@@ -67,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <label for="image">Imagem Padrão:</label>
             <input type="file" name="image" id="image" accept="image/*">
-            <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 2MB.</small>
+            <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 10MB.</small>
 
             <div class="button-container">
                 <button type="submit" class="save-button">Cadastrar Categoria</button>

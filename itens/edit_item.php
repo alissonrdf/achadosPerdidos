@@ -41,6 +41,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Verificar se o usuário enviou uma nova imagem
     if (!empty($_FILES['image']['name'])) {
+        if (!isImageSizeAllowed($_FILES['image'])) {
+            echo "O arquivo excede o tamanho máximo permitido de 10MB.";
+            exit();
+        }
         // Gerar um nome seguro e único para a imagem usando o nome do item
         $imageName = generateSafeImageName($name);
         $targetPath = "../uploads/" . $imageName;
