@@ -29,14 +29,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $image = $item['foto']; // Mantém a imagem atual por padrão
     $changes = [];
 
-    if ($name !== $item['nome']) {
-        $changes['nome'] = ['de' => $item['nome'], 'para' => $name];
-    }
-    if ($description !== $item['descricao']) {
-        $changes['descricao'] = ['de' => $item['descricao'], 'para' => $description];
-    }
+    // Buscar se a categoria permite foto
+    $catStmt = $pdo->prepare("SELECT imagem_categoria, permite_foto FROM categorias WHERE id = ?");
+    $catStmt->execute([$category_id]);
+    $category = $catStmt->fetch();
+    $permite_foto = $category ? $category['permite_foto'] : 1;
+
     if ($category_id !== $item['categoria_id']) {
         $changes['categoria_id'] = ['de' => $item['categoria_id'], 'para' => $category_id];
+        // Se mudou para uma categoria que não permite foto, zera a foto
+        if ($permite_foto == 0) {
+            $image = $category['imagem_categoria'] ?? 'default.webp';
+            $changes['foto'] = ['de' => $item['foto'], 'para' => $image];
+        }
     }
 
     // Verificar se o usuário enviou uma nova imagem
@@ -56,6 +61,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             echo "Erro ao processar a imagem.";
         }
+    } else if ($permite_foto == 0) {
+        // Se a categoria não permite foto, sempre zera a foto
+        $image = $category['imagem_categoria'] ?? 'default.webp';
     }
 
     // Atualizar o item no banco de dados
@@ -120,6 +128,56 @@ $categories = $category_stmt->fetchAll(PDO::FETCH_ASSOC);
             <label for="image">Imagem (deixe em branco para manter a atual):</label>
             <input type="file" name="image" id="image" accept="image/*">
             <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 10MB.</small>
+            <script>
+            // Desabilita o campo de imagem se a categoria não permitir foto
+            const categorySelect = document.getElementById('category_id');
+            const imageInput = document.getElementById('image');
+            const categories = <?php echo json_encode($categories); ?>;
+            function updateImageInput() {
+                const selected = categories.find(c => c.id == categorySelect.value);
+                if (selected && selected.permite_foto == 0) {
+                    imageInput.disabled = true;
+                    imageInput.value = '';
+                    imageInput.title = 'Esta categoria não permite cadastro de fotos.';
+                } else {
+                    imageInput.disabled = false;
+                    imageInput.title = '';
+                }
+            }
+            categorySelect.addEventListener('change', updateImageInput);
+            window.addEventListener('DOMContentLoaded', updateImageInput);
+            </script>
+
+            <!-- Adiciona aviso dinâmico se a categoria não permite foto -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const categorySelect = document.getElementById('category_id');
+                    const imageInput = document.getElementById('image');
+                    const avisoDiv = document.createElement('div');
+                    avisoDiv.id = 'aviso-permite-foto';
+                    avisoDiv.style.color = 'red';
+                    imageInput.parentNode.insertBefore(avisoDiv, imageInput.nextSibling);
+
+                    // Mapeia categorias e se permitem foto
+                    const categoriasPermiteFoto = {};
+                    <?php foreach ($categories as $cat): ?>
+                        categoriasPermiteFoto[<?php echo $cat['id']; ?>] = <?php echo $cat['permite_foto'] ? 'true' : 'false'; ?>;
+                    <?php endforeach; ?>
+
+                    function atualizarAviso() {
+                        const selected = categorySelect.value;
+                        if (categoriasPermiteFoto[selected] === false) {
+                            avisoDiv.textContent = 'Atenção: Esta categoria não permite o cadastro de fotos.';
+                            imageInput.disabled = true;
+                        } else {
+                            avisoDiv.textContent = '';
+                            imageInput.disabled = false;
+                        }
+                    }
+                    categorySelect.addEventListener('change', atualizarAviso);
+                    atualizarAviso();
+                });
+            </script>
 
             <div class="button-container">
                 <button type="submit" class="save-button">Salvar Alterações</button>

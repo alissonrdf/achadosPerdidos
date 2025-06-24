@@ -13,10 +13,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $created_by = $_SESSION['user_id'];
     $image = 'default.webp';
+    $permite_foto = isset($_POST['permite_foto']) ? 1 : 0;
 
     if (!empty($_FILES['image']['name'])) {
+<<<<<<< HEAD
         if (!isImageSizeAllowed($_FILES['image'])) {
             echo "O arquivo excede o tamanho máximo permitido de 10MB.";
+=======
+        // Verifica o tamanho do arquivo (10MB = 10 * 1024 * 1024 bytes)
+        if ($_FILES['image']['size'] > 10 * 1024 * 1024) {
+            echo "Erro: O arquivo excede o limite de 2MB.";
+>>>>>>> 65bbb78b55600d699fb265d2c4e7d02a7d91edbb
             exit();
         }
         // Gerar um nome seguro e único para a imagem usando o nome do item
@@ -28,12 +35,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $image = $imageName;
         } else {
             echo "Erro ao processar a imagem.";
+            exit();
         }
     }
 
-    $sql = "INSERT INTO categorias (nome, imagem_categoria, created_by) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO categorias (nome, imagem_categoria, created_by, permite_foto) VALUES (?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$name, $image, $created_by]);
+    $stmt->execute([$name, $image, $created_by, $permite_foto]);
     $categoryId = $pdo->lastInsertId(); // Recupera o ID da categoria recém-criada
 
     // Log de criação de categoria
@@ -72,6 +80,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="image">Imagem Padrão:</label>
             <input type="file" name="image" id="image" accept="image/*">
             <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 10MB.</small>
+<<<<<<< HEAD
+=======
+
+            <label for="permite_foto">
+                <input type="checkbox" name="permite_foto" id="permite_foto" checked>
+                Permitir cadastro de fotos para itens desta categoria
+            </label>
+>>>>>>> 65bbb78b55600d699fb265d2c4e7d02a7d91edbb
 
             <div class="button-container">
                 <button type="submit" class="save-button">Cadastrar Categoria</button>

@@ -12,11 +12,12 @@ CREATE TABLE IF NOT EXISTS usuarios (
     deleted_by INT DEFAULT NULL
 );
 
--- Tabela de categorias, agora com suporte para imagem padrão
+-- Tabela de categorias, agora com suporte para imagem padrão e controle de permissão de foto
 CREATE TABLE categorias (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL UNIQUE,
     imagem_categoria VARCHAR(255) DEFAULT 'default.webp',
+    permite_foto BOOLEAN NOT NULL DEFAULT TRUE, -- NOVO: indica se a categoria permite fotos
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by INT DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL,
