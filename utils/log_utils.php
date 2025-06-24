@@ -23,21 +23,13 @@
  */
 function logAction(PDO $pdo, array $data): int {
 
-/**
- * Valida o status fornecido e garante que seja 'success' ou 'error'.
- * @param string $status Status a ser validado
- * @return string Status validado ('success' ou 'error')
- */
-function validateStatus(string $status): string {
-    return $status === 'error' ? 'error' : 'success';
-}
-    $userId     = $data['user_id']     ?? null;
-    $entityId   = $data['entity_id']   ?? null;
-    $entityType = $data['entity_type'] ?? null;
-    $action     = $data['action']      ?? '';
-    $reason     = $data['reason']      ?? '';
-    $changes    = $data['changes']     ?? null;
-    $status     = validateStatus($data['status'] ?? 'success');
+$userId     = $data['user_id']     ?? null;
+$entityId   = $data['entity_id']   ?? null;
+$entityType = $data['entity_type'] ?? null;
+$action     = $data['action']      ?? '';
+$reason     = $data['reason']      ?? '';
+$changes    = $data['changes']     ?? null;
+$status     = validateStatus($data['status'] ?? 'success');
     $ip         = isset($data['ip_address']) ? substr($data['ip_address'], 0, 45) : null;
     $userAgent  = isset($data['user_agent']) ? substr($data['user_agent'], 0, 255) : null;
     return registerLog(
