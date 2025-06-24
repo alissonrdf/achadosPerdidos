@@ -27,7 +27,7 @@ if (!isset($_SESSION['user_id'])) {
             <a href="categorias/add_category.php">Adicionar Nova Categoria</a>
             <?php if ($_SESSION['user_role'] === 'admin'): ?>
                 <a href="usuarios/list_users.php">Gerenciar Usuários</a>
-                <a href="log_report.php">Relatório de Logs</a>
+                <a href="relatorios/log_report.php">Relatório de Logs</a>
             <?php endif; ?>
         </div>
     </div>

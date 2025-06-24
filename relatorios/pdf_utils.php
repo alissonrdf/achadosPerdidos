@@ -176,11 +176,11 @@ function generateLogReportPDF(PDO $pdo, array $filters = []) {
     $html = ob_get_clean();
       // Gera um nome único para o arquivo PDF
     $filename = 'logs_' . date('Y-m-d_His') . '.pdf';
-    $output = __DIR__ . '/../temp/' . $filename;
+    $output = __DIR__ . '/../logs/' . $filename;
     
-    // Verifica se o diretório temp existe, caso contrário cria
-    if (!file_exists(__DIR__ . '/../temp')) {
-        mkdir(__DIR__ . '/../temp', 0755, true);
+    // Verifica se o diretório logs existe, caso contrário cria
+    if (!file_exists(__DIR__ . '/../logs')) {
+        mkdir(__DIR__ . '/../logs', 0755, true);
     }    // Método simplificado para gerar PDF
     // Salva o HTML em um arquivo e deixa o navegador/usuário lidar com a visualização
     file_put_contents($output, $html);

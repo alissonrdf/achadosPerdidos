@@ -1,13 +1,13 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
-include 'db.php';
-require_once 'utils/log_utils.php';
-require_once 'utils/report_utils.php';
+include '../db.php';
+require_once '../utils/log_utils.php';
+require_once 'report_utils.php';
 
 // Configuração de paginação
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -166,7 +166,6 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
 
 // Verifica se é uma solicitação de exportação PDF
 if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
-    // Obtém todos os logs para o PDF (sem paginação)
     $pdfSql = "SELECT l.*, u.username FROM logs l 
               LEFT JOIN usuarios u ON l.user_id = u.id" . 
               $where . 
@@ -174,16 +173,11 @@ if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
     $pdfStmt = $pdo->prepare($pdfSql);
     $pdfStmt->execute($params);
     $pdfLogs = $pdfStmt->fetchAll();
-      // Gera o PDF com o modo de visualização correto
     if ($viewMode === 'friendly') {
-        $pdfPath = generateFriendlyLogPDF($pdfLogs, $filters);
+        generateFriendlyLogPDF($pdfLogs, $filters); // Agora envia direto
     } else {
-        $pdfPath = generateLogPDF($pdfLogs, $filters);
+        generateLogPDF($pdfLogs, $filters); // Agora envia direto
     }
-    
-    // Retorna o URL do PDF para ser aberto em uma nova aba
-    $pdfUrl = "view_pdf.php?file=" . basename($pdfPath);
-    echo json_encode(['url' => $pdfUrl]);
     exit;
 }
 ?>
@@ -194,15 +188,15 @@ if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Achados e Perdidos - Relatório de Logs</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/report.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/report.css">
 </head>
 <body>
     <div class="report-container <?= $viewMode === 'friendly' ? 'friendly-view' : '' ?>">
         <div class="report-header">
             <h1 class="report-title">Relatório de Logs do Sistema</h1>
             <div class="report-actions">
-                <a href="dashboard.php" class="btn btn-secondary">← Voltar ao Painel</a>
+                <a href="../dashboard.php" class="btn btn-secondary">← Voltar ao Painel</a>
                 <a href="?<?= http_build_query(array_merge($filters, ['view_mode' => $viewMode === 'friendly' ? 'normal' : 'friendly'])) ?>" class="btn btn-primary">
                     Alternar para Modo <?= $viewMode === 'friendly' ? 'Normal' : 'Amigável' ?>
                 </a>
@@ -318,31 +312,9 @@ if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
           <div class="export-options">
             <a href="<?= $_SERVER['REQUEST_URI'] . (strpos($_SERVER['REQUEST_URI'], '?') ? '&' : '?') ?>export=csv" class="btn btn-success">
                 Exportar CSV <?= $viewMode === 'friendly' ? '(Amigável)' : '(Normal)' ?>
-            </a>            <a href="#" class="btn btn-danger" onclick="exportPDF(event)">
+            </a>            <a href="<?= $_SERVER['REQUEST_URI'] . (strpos($_SERVER['REQUEST_URI'], '?') ? '&' : '?') ?>export=pdf" target="_blank" class="btn btn-danger">
                 Exportar PDF <?= $viewMode === 'friendly' ? '(Amigável)' : '(Normal)' ?>
             </a>
-            
-            <script>
-            function exportPDF(event) {
-                event.preventDefault();
-                // Obter a URL atual e adicionar o parâmetro export=pdf
-                const baseUrl = window.location.href;
-                const separator = baseUrl.includes('?') ? '&' : '?';
-                const exportUrl = `${baseUrl}${separator}export=pdf`;
-                
-                // Fazer uma requisição AJAX para obter o URL do PDF
-                fetch(exportUrl)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Abrir o PDF em uma nova guia
-                        window.open(data.url, '_blank');
-                    })
-                    .catch(error => {
-                        console.error('Erro ao exportar PDF:', error);
-                        alert('Ocorreu um erro ao exportar o PDF. Por favor, tente novamente.');
-                    });
-            }
-            </script>
         </div>
         
         <?php if ($totalRecords > 0): ?>

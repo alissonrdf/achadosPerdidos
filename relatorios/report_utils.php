@@ -326,17 +326,16 @@ function generateLogPDF($logs, $filters = []) {
     
     // Gera o nome do arquivo baseado na data
     $filename = 'logs_technical_' . date('Y-m-d_His') . '.pdf';
-    $filepath = __DIR__ . '/../temp/' . $filename;
+    $filepath = __DIR__ . '/../logs/' . $filename;
     
     // Certifica-se de que o diretório existe
-    if (!is_dir(__DIR__ . '/../temp')) {
-        mkdir(__DIR__ . '/../temp', 0755, true);
+    if (!is_dir(__DIR__ . '/../logs')) {
+        mkdir(__DIR__ . '/../logs', 0755, true);
     }
     
     // Salva o PDF
-    $pdf->Output($filepath, 'F');
-    
-    return 'temp/' . $filename;
+    $pdf->Output('logs_' . date('Y-m-d_His') . '.pdf', 'I'); // ou 'D' para forçar download
+    exit;
 }
 
 /**
@@ -584,15 +583,14 @@ function generateFriendlyLogPDF($logs, $filters = []) {
     
     // Gera o nome do arquivo baseado na data
     $filename = 'logs_friendly_' . date('Y-m-d_His') . '.pdf';
-    $filepath = __DIR__ . '/../temp/' . $filename;
+    $filepath = __DIR__ . '/../logs/' . $filename;
     
     // Certifica-se de que o diretório existe
-    if (!is_dir(__DIR__ . '/../temp')) {
-        mkdir(__DIR__ . '/../temp', 0755, true);
+    if (!is_dir(__DIR__ . '/../logs')) {
+        mkdir(__DIR__ . '/../logs', 0755, true);
     }
     
     // Salva o PDF
-    $pdf->Output($filepath, 'F');
-    
-    return 'temp/' . $filename;
+    $pdf->Output('logs_' . date('Y-m-d_His') . '.pdf', 'I'); // ou 'D' para forçar download
+    exit;
 }
