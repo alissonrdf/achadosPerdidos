@@ -8,7 +8,6 @@ if (!isset($_SESSION['user_id'])) {
 include '../db.php';
 require_once '../utils/log_utils.php';
 
-$error = '';
 $errorMessage = isset($_GET['error']) ? $_GET['error'] : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
