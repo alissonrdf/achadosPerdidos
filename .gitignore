@@ -3,8 +3,6 @@ config.php
 # Composer
 /vendor/
 composer.phar
-composer.lock
-composer.json
 # PHPUnit
 .phpunit.cache/
 # Outras pastas e arquivos temporários
