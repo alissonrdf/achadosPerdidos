@@ -31,12 +31,14 @@ $categorias = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tr>
                 <th>Nome</th>
                 <th>Imagem Padrão</th>
+                <th>Permite Foto?</th>
                 <th>Ações</th>
             </tr>
             <?php foreach ($categorias as $categoria): ?>
             <tr>
                 <td><?php echo htmlspecialchars($categoria['nome']); ?></td>
                 <td><img src="../uploads/<?php echo htmlspecialchars($categoria['imagem_categoria'] ?? 'default.webp'); ?>" width="50" /></td>
+                <td><?php echo $categoria['permite_foto'] ? 'Sim' : 'Não'; ?></td>
                 <td>
                     <a href="edit_category.php?id=<?php echo $categoria['id']; ?>">Editar</a> |
                     <a href="delete_category.php?id=<?php echo $categoria['id']; ?>" onclick="return confirm('Tem certeza que deseja excluir esta categoria?');">Excluir</a>
