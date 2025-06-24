@@ -93,6 +93,32 @@ O arquivo `sql/database_setup.sql` contém todas as instruções para criar as t
   - `ip_address` e `user_agent`: Informações do ambiente de quem realizou a ação.
   - `created_at`: Data/hora do registro.
 
+## Auditoria e Centralização de Logs
+
+Todas as ações administrativas relevantes (criação, edição, exclusão, login, logout, etc.) são registradas na tabela `logs`. O registro de logs é **centralizado exclusivamente** na função `logAction` (em `utils/log_utils.php`). **Nunca utilize `registerLog` diretamente nos CRUDs ou em qualquer outro lugar do sistema.**
+
+A função `logAction` faz validação automática dos dados, preenche valores padrão, trunca campos longos (`ip_address` e `user_agent`) para respeitar os limites do banco e converte valores inválidos de `status` para `'success'`.
+
+**Como usar:**
+
+```php
+logAction($pdo, [
+    'user_id'     => $userId, // obrigatório
+    'entity_id'   => $entidadeId, // pode ser null
+    'entity_type' => 'item'|'categoria'|'usuario'|null, // tipo da entidade
+    'action'      => 'create_item'|'edit_user'|etc, // ação realizada
+    'reason'      => 'Descrição da ação',
+    'changes'     => json_encode([...]) ou null, // mudanças relevantes
+    'status'      => 'success'|'error',
+    'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
+    'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
+]);
+```
+
+- O campo `changes` deve ser um JSON com as alterações relevantes. Para alterações de senha, registre apenas `{ "password": { "de": "***", "para": "***" } }`.
+- Campos longos são truncados automaticamente.
+- Se precisar alterar a estrutura dos logs, basta modificar a função central.
+
 ### Exemplo de registro de log de edição
 ```json
 {
@@ -112,50 +138,19 @@ O arquivo `sql/database_setup.sql` contém todas as instruções para criar as t
 }
 ```
 
-> **Nota:** Para ações de edição de senha, o campo `changes` registra apenas a indicação da alteração, sem valores.
+> **Nota:** Para ações de edição de senha, o campo `changes` registra apenas a indicação da alteração, sem valores reais.
 
-## Auditoria e Centralização de Logs
-
-Todas as ações administrativas relevantes (criação, edição, exclusão, login, logout, etc.) são registradas na tabela `logs`. Para facilitar manutenção e evitar erros, o sistema centraliza o registro de logs na função `logAction` (em `utils/log_utils.php`).
-
-**Como usar:**
-
-```php
-logAction($pdo, [
-    'user_id'     => $userId, // obrigatório
-    'entity_id'   => $entidadeId, // pode ser null
-    'entity_type' => 'item'|'categoria'|'usuario'|null, // tipo da entidade
-    'action'      => 'create_item'|'edit_user'|etc, // ação realizada
-    'reason'      => 'Descrição da ação',
-    'changes'     => json_encode([...]) ou null, // mudanças relevantes
-    'status'      => 'success'|'error',
-    'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? null,
-    'user_agent'  => $_SERVER['HTTP_USER_AGENT'] ?? null
-]);
-```
-
-- **Nunca use `registerLog` diretamente nos CRUDs.**
-- A função `logAction` faz validação, corte de campos e preenche valores padrão.
-- Valores inválidos para `status` serão automaticamente convertidos para `'success'`.
-- Campos longos (`ip_address` e `user_agent`) são truncados automaticamente.
-- Se precisar alterar a estrutura dos logs, basta modificar a função central.
-
-## Guia de Uso
-
-1. **Login**: Acesse `login.php` para entrar no sistema.
-2. **Dashboard**: Após o login, você será direcionado para `dashboard.php`, onde pode acessar todas as funcionalidades de acordo com suas permissões.
-3. **Gerenciamento de Itens**:
-   - Acesse a seção "Itens" para adicionar, editar, listar ou excluir itens encontrados.
-   - Filtre itens por data e categoria na página inicial (`index.php`).
-4. **Gerenciamento de Categorias**: Acesse a seção "Categorias" para gerenciar as categorias dos itens.
-5. **Gerenciamento de Usuários**: Administradores podem acessar a seção "Usuários" para gerenciar contas de usuários.
-6. **Relatórios de Logs**: Administradores podem acessar a seção "Relatórios" para visualizar e exportar relatórios de logs.
-
-## Boas Práticas de Segurança
+## Recomendações de Segurança
 
 - **Senhas**: As senhas são armazenadas utilizando `password_hash()` para garantir a segurança dos dados.
 - **Controle de Acesso**: As permissões são verificadas em cada página para garantir que usuários não autorizados não acessem recursos restritos.
 - **Configuração de `config.php`**: O arquivo `config.php` é gerado automaticamente durante a instalação. Mantenha este arquivo seguro e restrinja seu acesso.
+- **Exclusão do install.php**: Após a instalação, exclua o arquivo `install.php` do servidor para evitar reinstalações ou acessos indevidos.
+
+## Permissões e Acesso a Relatórios
+
+- Apenas usuários com papel de **administrador** podem acessar e exportar relatórios de logs.
+- Usuários comuns não têm acesso ao CRUD de usuários nem aos relatórios de auditoria.
 
 ## Possíveis Melhorias
 
