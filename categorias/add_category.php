@@ -74,15 +74,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="image">Imagem Padrão:</label>
             <input type="file" name="image" id="image" accept="image/*">
             <small>Tipos permitidos: JPG, PNG, GIF, WEBP, BMP. Tamanho máximo: 10MB.</small>
-<<<<<<< HEAD
-=======
-
             <label for="permite_foto">
                 <input type="checkbox" name="permite_foto" id="permite_foto" checked>
                 Permitir cadastro de fotos para itens desta categoria
             </label>
->>>>>>> 65bbb78b55600d699fb265d2c4e7d02a7d91edbb
-
             <div class="button-container">
                 <button type="submit" class="save-button">Cadastrar Categoria</button>
                  <a href="list_categories.php" class="cancel-button">Cancelar</a>
